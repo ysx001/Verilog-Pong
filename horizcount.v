@@ -22,10 +22,11 @@ module horizcount(
     input clk25M,
     output HS,
     output [9:0] hcount,
+    output vsenable,
     output reg termcount
     );
 
-parameter numPixels = 799;
+parameter numPixels = 799; // Value of pixels in a horizonal line = 799
 
 reg [9:0] nextCount;
 reg [9:0] count = 0;
@@ -33,10 +34,10 @@ reg nextTermCount;
 
 always @ (*) begin
 	if (count < 799)
-		nextCount = count + 1;
+		nextCount = count + 1; 
 	else
-		nextCount = 0;
-	nextTermCount = (nextCount >= 799) ? 1 : 0;
+		nextCount = 0; // counter has reached the end of pixel count - reset the counter
+	nextTermCount = (nextCount >= 799) ? 1 : 0; // Enable the vertical counter when hcount >= 799
 end
 
 always @ (posedge clk25M) begin
@@ -47,6 +48,6 @@ end
 // Output
 assign hcount = count;
 
-assign HS = (count < 96) ? 1 : 0;
+assign HS = (count < 96) ? 1 : 0; // Horizontal Sync Pulse is high when count is 0-95
 
 endmodule
