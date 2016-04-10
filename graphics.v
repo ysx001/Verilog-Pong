@@ -73,6 +73,8 @@ module graphics(
 	// Vertical back porch = 35 (6+29)
 	// Vertical front porch = 515 (6+29+480)
 	
+	// Output colors when within the porches
+	
 	always @ (*) begin
 		if (horizcount < 144 || horizcount >= 784 || vertcount < 35 || vertcount >= 515) begin
 			next_red = 3'b000;
