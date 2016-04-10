@@ -68,6 +68,11 @@ module graphics(
 		blue <= next_blue;
 	end
 	
+	// Horizontal back porch = 144 (128+16)
+	// Horizontal front portch - 784 (128+16+640)
+	// Vertical back porch = 35 (6+29)
+	// Vertical front porch = 515 (6+29+480)
+	
 	always @ (*) begin
 		if (horizcount < 144 || horizcount >= 784 || vertcount < 35 || vertcount >= 515) begin
 			next_red = 3'b000;
