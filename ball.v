@@ -1,4 +1,4 @@
-module game(
+module ball(
 		input clk25M, reset, vga_on;
 		input [9:0] x, y; // the length of this reg depends on the length of the output of the VGA
 		output [2:0] rgb; // outputs the rgb color value for the ball
