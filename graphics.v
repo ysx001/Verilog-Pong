@@ -70,8 +70,8 @@ module graphics(
 	
 	// Horizontal back porch = 144 (128+16)
 	// Horizontal front portch - 784 (128+16+640)
-	// Vertical back porch = 35 (6+29)
-	// Vertical front porch = 515 (6+29+480)
+	// Vertical back porch = 35 (2+33)
+	// Vertical front porch = 515 (2+33+480)
 	
 	// Output colors when within the porches
 	
