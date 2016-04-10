@@ -19,7 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module vgapixelclock(
-    input clk50M,
+    input clk50M, reset
     output reg clk25M
     );
 
@@ -29,7 +29,14 @@ wire nextClk;
 
 assign nextClk = ~clk25M;
 
-always @ (posedge clk50M)
-	clk25M <= nextClk;
+always @ (posedge clk50M, posedge reset)
+	if (reset)
+	  begin
+		clk25M <= 0;
+	  end
+	else
+	  begin
+		clk25M <= nextClk;
+	  end
 
 endmodule
