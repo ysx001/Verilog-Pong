@@ -1,7 +1,7 @@
 module game(
 		input [9:0] X // the length of this reg depends on the length of the output of the VGA
 		input [9:0] Y // the length of this reg depends on the length of the output of the VGA
-		output //?? ALARM!!!!!!!  reserved
+		output //?? ARHTUNG!!!!!!!  reserved
 		)	
 
 //part: the movent of the ball
@@ -29,4 +29,3 @@ module game(
 				else
 					ballY <= ballY - 1
 			end
-	end
