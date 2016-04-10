@@ -21,7 +21,7 @@
 module vga_sync(
     input clk25M, reset
     output [9:0] hcount, vcount,
-    output clk25M, HS, VS, vga_on
+    output HS, VS, vga_on
     );
   
   // horizonal and vertical counters
@@ -99,22 +99,3 @@ module vga_sync(
 endmodule
 
 
-
-
-
-
-
-
-
-
-// Output
-assign hcount = count;
-
-assign HS = (count < 96) ? 1 : 0; // Horizontal Sync Pulse is high when count is 0-95
-
-
-
-	
-
-
-endmodule
