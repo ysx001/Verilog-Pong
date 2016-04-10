@@ -31,14 +31,15 @@ module vertcount(
 		if (count < 524)
 			nextCount = count + 1;
 		else
-			nextCount = 0;
-
+			nextCount = 0; // Reset when reach 524 lines
+	
+	// increment count when increment is 1 (end of horizontal counter in reached)
 	always @ (posedge increment)
 		count <= nextCount;
 
 	// Outputs
 	assign vcount = count;
 
-	assign VS = (vcount < 2) ? 1 : 0;
+	assign VS = (vcount < 2) ? 1 : 0; // Verical Sync Pulse is high when vcount is 0 or 1.
 
 endmodule
