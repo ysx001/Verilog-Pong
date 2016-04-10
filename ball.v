@@ -1,8 +1,8 @@
 module ball(
-		input clk25M, reset, vga_on;
-		input [9:0] x, y; // the length of this reg depends on the length of the output of the VGA
-		output [2:0] rgb; // outputs the rgb color value for the ball
-		)	
+		input clk25M, reset, vga_on,
+		input [9:0] x, y, // the length of this reg depends on the length of the output of the VGA
+		output [2:0] rgb // outputs the rgb color value for the ball
+		);
 
 	
 	
@@ -47,10 +47,10 @@ module ball(
 	always @(posedge clk) begin
 
 		if(endofframe) //when a frame has ended
-			if(ballX==0 & ballY==0) //check if the game is resetted or not
+			if(ballX==0 & ballY==0) begin //check if the game is resetted or not
 				ballX <= 240; //if reset, then move ball to intial x-pos 240
 				ballY <= 320; //if reset, then move ball to intial y-pos 320
-
+            end
 			else begin //if not reset
 				if(ball_dirX | bounceX) //if the direction of the ball or the bouncing direction of the ball is to the right
 					ballX <= ballX + 1; //add 2 units to the ball's x-pos (move to the right)
@@ -59,5 +59,7 @@ module ball(
 				if(ball_dirY | bounceY) //same for the y direction.
 					ballY <= ballY + 1;
 				else
-					ballY <= ballY - 1
-			end
+					ballY <= ballY - 1;
+            end
+    end
+endmodule
