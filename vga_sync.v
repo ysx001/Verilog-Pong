@@ -19,8 +19,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module vga_sync(
-    input clk25M, reset
-    output [9:0] hcount, vcount,
+    input clk25M, reset,
+    output [9:0] hcount,
+    output [9:0] vcount,
     output HS, VS, vga_on
     );
   

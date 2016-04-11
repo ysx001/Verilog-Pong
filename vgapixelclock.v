@@ -19,7 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module vgapixelclock(
-    input clk50M, reset
+    input clk50M, reset,
     output reg clk25M
     );
 
