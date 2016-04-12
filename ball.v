@@ -1,9 +1,7 @@
 module ball(
 		input clk25M, reset, vga_on,
 		input [9:0] x, y, // the length of this reg depends on the length of the output of the VGA
-		output [2:0] red, green, // outputs the rgb color value for the ball
-		output [1:0] blue // outputs the rgb color value for the ball
-		output ball_on // output control for the rgb mux for vga output
+		output [2:0] ball_on, rgb // outputs the rgb color value for the ball
 		);
 
 	// Define a size for the ball
@@ -16,6 +14,10 @@ module ball(
 	reg [9:0] diff_x, diff_y; // difference in x and y -> for tracking x_vel and y_vel
 	reg [9:0] diff_x_next, diff_y_next; // 
 	
+	
+	reg ball_dirX, ball_dirY; //1=right&up, 0=left&down
+	//reg bounceX, bounceY; //1=right&up, 0=left&down
+
 	wire endofframe = (x == 0 && y == 481); //depends on how the video is being scanned
 	// end of frame when raster reach the beginning of last line
 	
@@ -46,8 +48,10 @@ module ball(
 	assign ball_bottom = ball_top + ball_size - 1;
 	
 	assign ball_on = (x >= ball_left && x <= ball_right && y >= ball_top && y <= ball_bottom);
-	
+	//I think the following can also do this:
+	//assign ball_on = (x > 30 && x < 600 && y > 0 && y < 480)
 	// ball movement
+	
 	if(endofframe) //when a frame has ended
 			ball_x_next = ball_x + diff_x;
 			ball_y_next = ball_y + diff_y;
@@ -57,9 +61,9 @@ module ball(
 		diff_x_next = diff_x;
 		diff_y_next = diff_y;
 	
-		if (ball_top <= 0) // top
+		if (ball_top <= 3) // top
 			diff_y_next = 1;
-		else if (ball_bottom >= 480) // bottom
+		else if (ball_bottom >= 477) // bottom
 			diff_y_next = -1;
 		else if (ball_left <= 30) // NOTE!! Arbitary number for left boundary
 			diff_x_next = 1;
@@ -68,9 +72,7 @@ module ball(
 	end
 	
 	// ball color
-	assign red = 3'b000 
-	assign gree = 3'b111 // green
-	assign blue = 2'b00
+	assign rbg = 3'b010 // green
 
 endmodule
 
