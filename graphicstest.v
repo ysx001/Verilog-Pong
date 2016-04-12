@@ -32,8 +32,9 @@ module graphicstest(
     wire [9:0] paddle_two_x;
     wire [9:0] paddle_two_y;
 	 
-	 reg [9:0] ball_x = 10'd200;
-	 reg [9:0] ball_y = 10'b0;
+	 wire [9:0] ball_x;
+	 assign ball_x = 10'd200;
+	 reg [9:0] ball_y = 10'd10;
 	 reg ball_direction = 1;
 	 assign paddle_one_x = 10'b0;
 	 assign paddle_one_y = 10'b0;
