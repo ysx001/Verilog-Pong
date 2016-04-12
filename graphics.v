@@ -30,7 +30,8 @@ module graphics(
     output reg [2:0] green,
     output reg [1:0] blue,
     output HS,
-    output VS
+    output VS,
+	 output endofframe
     );
 
 	/*************************** Timing ***********************************/
@@ -46,7 +47,6 @@ module graphics(
 
 	/*************************** Drawing Code *************************************/
    wire [9:0] xpixel, ypixel;
-	wire endofframe;
 	assign xpixel = horizcount - 144;
 	assign ypixel = vertcount - 35;
 	assign endofframe = vertcount > 515 ? 1 : 0;
@@ -56,9 +56,9 @@ module graphics(
 	wire [1:0] ball_blue;
 	wire ball_on;
 	
-	// ball movement graphics
-	ball drawball( .reset( reset), .x( xpixel ), .y( ypixel ), .red( ball_red ),
-			.green( ball_green ), .blue( ball_blue ), .ball_on( ball_on ), .endofframe( endofframe ));
+	// ball graphics
+	ball_graphics drawball( .reset( reset), .x( xpixel ), .y( ypixel ), .ball_x( ball_x ), .ball_y( ball_y ),
+		.red( ball_red ), .green( ball_green ), .blue( ball_blue ), .ball_on( ball_on ));
 	
 	//drawboard drawing( .xpixel( xpixel ), .ypixel( ypixel ), .ball_x( ball_x ), .ball_y( ball_y ), 
 	//	.paddle_one_x( paddle_one_x ), .paddle_one_y( paddle_one_y ), .paddle_two_x( paddle_two_x ), 
@@ -85,6 +85,7 @@ module graphics(
 	
 	
 	always @ (*) begin
+		// Output black while outside of range of display
 		if (horizcount < 144 || horizcount >= 784 || vertcount < 35 || vertcount >= 515) begin
 			next_red = 3'b000;
 			next_green = 3'b000;
@@ -95,6 +96,11 @@ module graphics(
 				next_red = ball_red;
 				next_green = ball_green;
 				next_blue = ball_blue;
+			end
+			else begin
+				next_red = 3'b001;
+				next_green = 3'b000;
+				next_blue = 2'b01;
 			end
 		end
 	end

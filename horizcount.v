@@ -22,7 +22,6 @@ module horizcount(
     input clk25M,
     output HS,
     output [9:0] hcount,
-    output vsenable,
     output reg termcount
     );
 
