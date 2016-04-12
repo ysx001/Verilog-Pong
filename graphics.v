@@ -19,8 +19,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module graphics(
-    input clk50M,
-	 input [9:0] ball_x,
+    input clk50M, reset
+    input [9:0] ball_x,
     input [9:0] ball_y,
     input [9:0] paddle_one_x,
     input [9:0] paddle_one_y,
@@ -48,13 +48,17 @@ module graphics(
    wire [9:0] xpixel, ypixel;
 	assign xpixel = horizcount - 144;
 	assign ypixel = vertcount - 35;
-	wire [2:0] draw_red;
-	wire [2:0] draw_green;
-	wire [1:0] draw_blue;
+	wire [2:0] ball_red;
+	wire [2:0] ball_green;
+	wire [1:0] ball_blue;
+	wire ball_on;
 	
-	drawboard drawing( .xpixel( xpixel ), .ypixel( ypixel ), .ball_x( ball_x ), .ball_y( ball_y ), 
-		.paddle_one_x( paddle_one_x ), .paddle_one_y( paddle_one_y ), .paddle_two_x( paddle_two_x ), 
-		.paddle_two_y( paddle_two_y ), .red( draw_red ), .green( draw_green ), .blue( draw_blue ));
+	ball drawball( .clk25M( clk25M ), .reset( reset) .x( xpixel ), .y( ypixel ), .red( ball_red ),
+			.green( ball_green ), .blue( ball_blue ), .ball_on( ball_on ));
+	
+	//drawboard drawing( .xpixel( xpixel ), .ypixel( ypixel ), .ball_x( ball_x ), .ball_y( ball_y ), 
+	//	.paddle_one_x( paddle_one_x ), .paddle_one_y( paddle_one_y ), .paddle_two_x( paddle_two_x ), 
+	//	.paddle_two_y( paddle_two_y ), .red( draw_red ), .green( draw_green ), .blue( draw_blue ));
 	
 	/*************************** Pixels ************************************/
 	// Pixel values are buffered in registers for one clock cycle to avoid timing problems
@@ -75,6 +79,7 @@ module graphics(
 	
 	// Output colors when within the porches
 	
+	
 	always @ (*) begin
 		if (horizcount < 144 || horizcount >= 784 || vertcount < 35 || vertcount >= 515) begin
 			next_red = 3'b000;
@@ -82,9 +87,11 @@ module graphics(
 			next_blue = 2'b00;
 		end
 		else begin
-			next_red = draw_red;
-			next_green = draw_green;
-			next_blue = draw_blue;
+			if (wall_on) begin
+				next_red = ball_red;
+				next_green = ball_green;
+				next_blue = ball_blue;
+			end
 		end
 	end
 
