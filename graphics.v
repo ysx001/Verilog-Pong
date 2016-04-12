@@ -53,6 +53,7 @@ module graphics(
 	wire [1:0] ball_blue;
 	wire ball_on;
 	
+	// ball movement graphics
 	ball drawball( .clk25M( clk25M ), .reset( reset) .x( xpixel ), .y( ypixel ), .red( ball_red ),
 			.green( ball_green ), .blue( ball_blue ), .ball_on( ball_on ));
 	
