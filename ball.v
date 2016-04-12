@@ -1,5 +1,5 @@
 module ball(
-		input clk25M, reset, vga_on,
+		input clk25M, reset,
 		input [9:0] x, y, // the length of this reg depends on the length of the output of the VGA
 		output [2:0] ball_on, rgb // outputs the rgb color value for the ball
 		);
