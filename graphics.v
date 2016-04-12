@@ -46,23 +46,25 @@ module graphics(
 	vertcount vcount( .increment( termcount ), .VS( VS ), .vcount( vertcount ));
 
 	/*************************** Drawing Code *************************************/
-   wire [9:0] xpixel, ypixel;
+    wire [9:0] xpixel, ypixel;
 	assign xpixel = horizcount - 144;
 	assign ypixel = vertcount - 35;
 	assign endofframe = vertcount > 515 ? 1 : 0;
 	
+    // ball graphics
 	wire [2:0] ball_red;
 	wire [2:0] ball_green;
 	wire [1:0] ball_blue;
 	wire ball_on;
-	
-	// ball graphics
 	ball_graphics drawball( .reset( reset), .x( xpixel ), .y( ypixel ), .ball_x( ball_x ), .ball_y( ball_y ),
 		.red( ball_red ), .green( ball_green ), .blue( ball_blue ), .ball_on( ball_on ));
 	
-	//drawboard drawing( .xpixel( xpixel ), .ypixel( ypixel ), .ball_x( ball_x ), .ball_y( ball_y ), 
-	//	.paddle_one_x( paddle_one_x ), .paddle_one_y( paddle_one_y ), .paddle_two_x( paddle_two_x ), 
-	//	.paddle_two_y( paddle_two_y ), .red( draw_red ), .green( draw_green ), .blue( draw_blue ));
+    // board graphics
+    wire [2:0] board_red, board_green;
+    wire [1:0] board_blue;
+    wire board_on;
+	board_graphics drawboard(.x( xpixel ), .y( ypixel ), .board_on( board_on ), 
+        .r( board_red ), .g( board_green ), .b( board_blue ));
 	
 	/*************************** Pixels ************************************/
 	// Pixel values are buffered in registers for one clock cycle to avoid timing problems
@@ -97,6 +99,11 @@ module graphics(
 				next_green = ball_green;
 				next_blue = ball_blue;
 			end
+            else if (board_on) begin // board should stay second to last
+                next_red = board_red;
+                next_green = board_green;
+                next_blue = board_blue;
+            end
 			else begin
 				next_red = 3'b001;
 				next_green = 3'b000;
