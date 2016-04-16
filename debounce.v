@@ -89,7 +89,7 @@ module debouncer(
 			end
 			1_to_0: begin
 				q = 1'b1;
-				if (~sw) begin
+				if (~raw) begin
 					counter_next = counter - 1;
 					if (counter_next == 0)
 						state_next = stable_0;
