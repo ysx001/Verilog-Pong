@@ -24,32 +24,30 @@ module debounce_test(
     output [7:0] seven_value,
     output [3:0] disp_select,
     );
-	 
-  reg [7:0] btn_1, btn_0;
-  wire [7:0] btn_1_next, btn_0_next;
-  wire db_clk_1, db_clk_0;
+	reg [7:0] btn_1, btn_0;
+	wire [7:0] btn_1_next, btn_0_next;
+	wire db_clk_1, db_clk_0;
+	
+	debounce dp_btn_0 (.raw(btn[0]), .clk(clk), .reset(reset), .db_clk(db_clk_0), .q());
+	debounce dp_btn_1 (.raw(btn[1]), .clk(clk), .reset(reset), .db_clk(db_clk_1), .q());
+	
+	sseg_hex btn_disp(.clk(clk), .reset(reset), .first_1(btn_0[7:4]), .first_0(btn_0[3:0]), .second_1(btn_1[7:4]),\
+			.second_0(btn_1[3:0]), .disp_select(disp_select), .seven_value(seven_value))
+			
+	always @ (posedge clk) begin
+		btn_1 = btn_1_next;
+		btn_0 = btn_0_next;
+	end
   
-  debounce dp_btn_0 (.raw(btn[0]), .clk(clk), .reset(reset), .db_clk(db_clk_0), .q());
-  debounce dp_btn_1 (.raw(btn[1]), .clk(clk), .reset(reset), .db_clk(db_clk_1), .q());
-  
-  sseg_hex btn_disp(.clk(clk), .reset(reset), .first_1(btn_0[7:4]), .first_0(btn_0[3:0]), .second_1(btn_1[7:4]),\
-                      .second_0(btn_1[3:0]), .disp_select(disp_select), .seven_value(seven_value))
-                      
-  always @ (posedge clk)
-    begin
-      btn_1 = btn_1_next;
-      btn_0 = btn_0_next;
-    end
-  
-  assign btn_1_next = (db_clk_1) ? btn_1 + 1 : btn_1;
-  assign btn_0_next = (db_clk_0) ? btn_0 + 1 : btn_0;
+	assign btn_1_next = (db_clk_1) ? btn_1 + 1 : btn_1;
+	assign btn_0_next = (db_clk_0) ? btn_0 + 1 : btn_0;
   
 endmodule
 
 module sseg_hex (input clk, reset,
 		input [3:0] first_1, first_0, second_1, second_0,
 		output reg [3:0] disp_select.
-	  output reg [7:0] seven_value,
+		output reg [7:0] seven_value,
 		);
 	
 	
@@ -58,14 +56,14 @@ module sseg_hex (input clk, reset,
 	wire [1:0] toptwo;
 	
 	always @ (posedge clk25, posedge reset)
-	  if (reset)
-	    counter <= 0;
-	   else
-	    counter <= counter_next;
+		if (reset)
+			counter <= 0;
+		else
+			counter <= counter_next;
 	
 	assign counter_next = counter + 1;
 	assign toptwo[1:0] = counter[18:17];	
-
+	
 	always @(*)
 	
 		case(toptwo)
@@ -105,11 +103,11 @@ module sseg_hex (input clk, reset,
 			4'h9 : seven_value = ~8'b11110110;
 			4'h9 : seven_value = ~8'b11110110;
 			4'ha : seven_value = ~8'b11101110;
-      4'hb : seven_value = ~8'b00111110;
-      4'hc : seven_value = ~8'b10011100;
-      4'hd : seven_value = ~8'b01111010;
-      4'he : seven_value = ~8'b10011110;
-      default: seven_value = ~8'b10001110;
+      			4'hb : seven_value = ~8'b00111110;
+      			4'hc : seven_value = ~8'b10011100;
+      			4'hd : seven_value = ~8'b01111010;
+      			4'he : seven_value = ~8'b10011110;
+      			default: seven_value = ~8'b10001110;
 		endcase
 	end
 endmodule
