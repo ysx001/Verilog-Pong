@@ -30,7 +30,7 @@ module spi_test(
     );
     
     wire trigger;
-    reg [39:0] out_bytes = 40'b0;
+    reg [39:0] out_bytes = 40'b10000011_00000000_00000000_00000000_00000000;
     wire [39:0] in_bytes;
     
     spi spi_joystick(clk50M, trigger, out_bytes, in_bytes, cs, mosi, miso, sck);
