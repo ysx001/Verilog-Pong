@@ -129,22 +129,25 @@ module spi_clk(
     output reg sck
     );
     
-    parameter N = 6;
+    parameter N=2;
+    //parameter N = 6;
     
     reg [N-1:0] next_ctr;
     reg [N-1:0] ctr;
-    reg next_sck;
+    reg next_sck = 0;
     initial ctr = 0;
+    initial sck = 0;
     
     always @ (*) begin
         next_ctr <= ctr + 1;
         next_sck <= enable ? next_ctr[N-1] : sck;
     end
        
-    always @ (posedge clk50M) begin
+    always @ (posedge clk50M)
         ctr <= next_ctr;
+        
+    always @ (clk)
         sck <= next_sck;
-    end
     
     assign clk = ctr[N-1];
 
