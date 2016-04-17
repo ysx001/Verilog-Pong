@@ -33,8 +33,7 @@ module graphicstest(
     wire [9:0] paddle_two_y;
 	 
 	 wire [9:0] ball_x, ball_y;
-	 assign paddle_one_x = 10'b0;
-	 assign paddle_one_y = 10'b0;
+	 assign paddle_one_x = 600;
 	 assign paddle_two_x = 10'b0;
 	 assign paddle_two_y = 10'b0;
 	 
@@ -44,7 +43,9 @@ module graphicstest(
      
 	 graphics graphics_mod(clk50M, reset, ball_x, ball_y, paddle_one_x, paddle_one_y, paddle_two_x, paddle_two_y, 
 	     red, green, blue, HS, VS, endofframe);
-	
+	     
+	paddle_movement paddle_one_mv(.reset(reset), .endofframe( endofframe ), .paddle_one_y( paddle_one_y ));
+		
 	ball_movement ball_mv(.endofframe( endofframe ), .paddle_one_x( paddle_one_x), 
 		.paddle_one_y( paddle_one_y ), .paddle_two_x( paddle_two_x ), 
 		.paddle_two_y( paddle_two_y ), .ball_x( ball_x ), .ball_y( ball_y ));

@@ -20,13 +20,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module seven_seg(input clk25,
-					input [3:0] first,
-					input [3:0] second, // from other modules, if socred then let this be one.
-					input reset,
-					output [7:0] segments,
-					output reg [3:0] digitselect
-				);
+module seven_seg(input clk, reset,
+		input [3:0] first_1, first_0, second_1, second_0,
+		
+		output [7:0] segments,
+		output reg [3:0] digitselect
+		);
 
 
 	reg [18:0] counter = 0;

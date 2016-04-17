@@ -58,6 +58,14 @@ module graphics(
 	wire ball_on;
 	ball_graphics drawball( .reset( reset), .x( xpixel ), .y( ypixel ), .ball_x( ball_x ), .ball_y( ball_y ),
 		.red( ball_red ), .green( ball_green ), .blue( ball_blue ), .ball_on( ball_on ));
+		
+    // paddle graphics
+	wire [2:0] paddle_red;
+	wire [2:0] paddle_green;
+	wire [1:0] paddle_blue;
+	wire paddle_on;
+	paddle_one_graphics drawpaddleone( .reset( reset), .x( xpixel ), .y( ypixel ), .paddle_one_y( paddle_one_y ), 
+	                        .red( paddle_red ), .green( paddle_green ), .blue( paddle_blue ), .paddle_on( paddle_on ));
 	
     // board graphics
     wire [2:0] board_red, board_green;
