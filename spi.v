@@ -40,7 +40,8 @@ module spi(
     );
     
     wire sclk;
-    spi_clk clk_spi( .clk50M( clk ), .clk( sclk ) );
+	wire spi_clk;
+    spi_clk clk_spi( .clk50M( clk ), .enable( cs ), .clk( spi_clk ), .sck( sclk ));
     assign sck = sclk; // sck is ignored when cs is 1
     
     wire [39:0] input_sr;
@@ -66,7 +67,7 @@ module spi(
         next_out_enable = fsm_ctr < 40 ? 1 : 0;
     end
     
-    always @ (posedge sclk) begin
+    always @ (posedge spi_clk) begin
         fsm_ctr <= next_fsm_ctr;
         out_enable <= next_out_enable;
         in_bytes <= (next_fsm_ctr == 40) ? input_sr : in_bytes;
@@ -76,23 +77,24 @@ module spi(
 endmodule
 
 // Shift register for SPI output
+// Note: this module assumes that the clock is only 
+// active during an active SPI transfer, and that 
+// each active SPI transfer continues for exactly 
+// 40 clock cycles
 module spi_output #(parameter size=40)(
     input sclk,
-    input enable,
     input [size - 1:0] out_bytes,
     output mosi);
     
-    reg prev_enable = 1'b0;
-    reg [size-1:0] out_bytes_reg;
-    reg next_out_bytes;
+    reg [size-1:0] out_bytes_reg = {(size-1){1'b0}};
+    reg [size-1:0] next_out_bytes;
     
     always @ (*)
-        next_out_bytes = (enable & prev_enable) ? (out_bytes_reg << 1)
+        next_out_bytes = (out_bytes_reg != {(size-1){1'b0}}) ? (out_bytes_reg << 1)
                             : out_bytes;
     
     always @ (negedge sclk) begin
         out_bytes_reg <= next_out_bytes;
-        prev_enable <= enable;
     end
     
     assign mosi = out_bytes_reg[size-1];
@@ -122,20 +124,27 @@ endmodule
 // We use 781.25 kHz, sample code has 66.67 kHz
 module spi_clk(
     input clk50M,
-    output clk
+    input enable,
+    output clk,
+    output reg sck
     );
     
     parameter N = 6;
     
     reg [N-1:0] next_ctr;
     reg [N-1:0] ctr;
+    reg next_sck;
     initial ctr = 0;
     
-    always @ (*)
+    always @ (*) begin
         next_ctr <= ctr + 1;
+        next_sck <= enable ? next_ctr[N-1] : sck;
+    end
        
-    always @ (posedge clk50M)
+    always @ (posedge clk50M) begin
         ctr <= next_ctr;
+        sck <= next_sck;
+    end
     
     assign clk = ctr[N-1];
 
