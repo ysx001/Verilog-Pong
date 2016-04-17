@@ -39,17 +39,18 @@ module spi(
     output sck              // SCK - SPI clock
     );
     
+    initial in_bytes = 40'b0;
+    
+    reg out_enable = 0;
     wire sclk;
 	wire spi_clk;
-    spi_clk clk_spi( .clk50M( clk ), .enable( cs ), .clk( spi_clk ), .sck( sclk ));
+    spi_clk clk_spi( .clk50M( clk ), .enable( out_enable ), .clk( spi_clk ), .sck( sclk ));
     assign sck = sclk; // sck is ignored when cs is 1
     
     wire [39:0] input_sr;
-    spi_input in( .sclk( sclk ), .in_bytes( input_sr ), .miso( miso ) );
+    spi_input spi_in( .sclk( sclk ), .in_bytes( input_sr ), .miso( miso ) );
     
-    reg out_enable = 0;
-    spi_output out( .sclk(sclk), .enable(out_enable), 
-                .out_bytes(out_bytes), .mosi(mosi) );
+    spi_output spi_out( .sclk(sclk), .out_bytes(out_bytes), .mosi(mosi) );
     
     // FSM
     reg [5:0] fsm_ctr = 6'd41;
@@ -129,8 +130,8 @@ module spi_clk(
     output reg sck
     );
     
-    parameter N=2;
-    //parameter N = 6;
+    //parameter N=2;
+    parameter N = 6;
     
     reg [N-1:0] next_ctr;
     reg [N-1:0] ctr;
@@ -143,11 +144,10 @@ module spi_clk(
         next_sck <= enable ? next_ctr[N-1] : sck;
     end
        
-    always @ (posedge clk50M)
+    always @ (posedge clk50M) begin
         ctr <= next_ctr;
-        
-    always @ (clk)
         sck <= next_sck;
+    end
     
     assign clk = ctr[N-1];
 
