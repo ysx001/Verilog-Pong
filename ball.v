@@ -44,7 +44,7 @@ endmodule
 	
 
 module paddle_one_graphics(
-		input reset, endofframe,
+		input reset,
 		input [9:0] x, y, // the length of this reg depends on the length of the output of the VGA
 		input [9:0] paddle_one_y; // button for controlling the paddle
 		output [2:0] red, green, // outputs the rgb color value for the paddle
