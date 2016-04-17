@@ -110,7 +110,7 @@ module spi_input #(parameter size=40)(
     input miso);
     
     reg [size-1:0] next_in_bytes;
-    initial next_in_bytes = {size{1'b0}};
+    initial in_bytes = {size{1'b0}};
     
     always @ (*)
         next_in_bytes = (in_bytes << 1) | miso;
