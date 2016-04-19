@@ -48,7 +48,7 @@ module spi(
     assign sck = sclk; // sck is ignored when cs is 1
     
     wire [39:0] input_sr;
-    spi_input spi_in( .sclk( sclk ), .in_bytes( input_sr ), .miso( miso ) );
+    spi_input spi_in( .sclk( sclk ), .reset( trigger ), .in_bytes( input_sr ), .miso( miso ) );
     
     spi_output spi_out( .sclk(sclk), .reset( trigger ), .out_bytes(out_bytes), .mosi(mosi) );
     
@@ -109,6 +109,7 @@ endmodule
 // Shift register for SPI input
 module spi_input #(parameter size=40)(
     input sclk,
+    input reset, 
     output reg [size - 1:0] in_bytes,
     // Connect to external hardware
     input miso);
@@ -119,8 +120,12 @@ module spi_input #(parameter size=40)(
     always @ (*)
         next_in_bytes = (in_bytes << 1) | miso;
     
-    always @ (posedge sclk)
-        in_bytes <= next_in_bytes;
+    always @ (posedge sclk or posedge reset) begin
+        if (reset == 1)
+            in_bytes <= {size{1'b0}};
+        else
+            in_bytes <= next_in_bytes;
+    end
 
 endmodule
 
@@ -153,6 +158,9 @@ module spi_clk(
     always @ (posedge clk50M) begin
         ctr <= next_ctr;
         sck <= next_sck;
+    end
+    
+    always @ (posedge clk) begin
         prev_enable <= enable;
     end
     
