@@ -191,5 +191,7 @@ module ball_movement(
 			end
 		else if (ball right > 620)
 			missed = 1'b1;
+			diff_x_next = -ball_x;
+			diff_y_next = -ball_y;
 	end
 endmodule
