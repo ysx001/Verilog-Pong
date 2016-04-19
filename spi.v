@@ -139,18 +139,21 @@ module spi_clk(
     
     reg [N-1:0] next_ctr;
     reg [N-1:0] ctr;
+    reg prev_enable = 0;
     reg next_sck = 0;
     initial ctr = 0;
     initial sck = 0;
     
     always @ (*) begin
         next_ctr <= ctr + 1;
-        next_sck <= enable ? next_ctr[N-1] : 0;
+        // Only run the SPI clock one normal clock cycle after the chip is selected
+        next_sck <= (prev_enable && enable) ? next_ctr[N-1] : 0;
     end
        
     always @ (posedge clk50M) begin
         ctr <= next_ctr;
         sck <= next_sck;
+        prev_enable <= enable;
     end
     
     assign clk = ctr[N-1];
