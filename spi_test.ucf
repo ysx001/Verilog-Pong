@@ -1,0 +1,22 @@
+NET "anode[3]" LOC = F15;
+NET "anode[2]" LOC = C18;
+NET "anode[1]" LOC = H17;
+NET "anode[0]" LOC = F17;
+NET "segments[7]" LOC = L18;
+NET "segments[6]" LOC = F18;
+NET "segments[5]" LOC = D17;
+NET "segments[4]" LOC = D16;
+NET "segments[3]" LOC = G14;
+NET "segments[2]" LOC = J17;
+NET "segments[1]" LOC = H14;
+NET "segments[0]" LOC = C17; // Decimal point
+
+// Clock definition
+NET "clk50M" LOC = B8;
+NET "clk50M" PERIOD = 20.0ns HIGH 50%;
+
+// Joystick
+NET "cs" LOC = L15; // JA1
+NET "mosi" LOC = K12; // JA2
+NET "miso" LOC = L17; // JA3
+NET "sck" LOC = M15; // JA4

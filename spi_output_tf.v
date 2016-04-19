@@ -26,7 +26,6 @@ module spi_output_tf;
 
 	// Inputs
 	reg sclk;
-	reg enable;
 	reg [39:0] out_bytes;
 
 	// Outputs
@@ -35,7 +34,6 @@ module spi_output_tf;
 	// Instantiate the Unit Under Test (UUT)
 	spi_output uut (
 		.sclk(sclk), 
-		.enable(enable), 
 		.out_bytes(out_bytes), 
 		.mosi(mosi)
 	);
@@ -45,12 +43,10 @@ module spi_output_tf;
 	initial begin
 		// Initialize Inputs
 		sclk = 0;
-		enable = 0;
 		out_bytes = 40'b1000_1011_1001_1011_1010_1011_1100_1011_1110_1011;
         
 		// Add stimulus here
         sclk=1; #1; sclk=0; #1;
-        enable=1;
         
         for(i=0; i<42; i=i+1) begin
             sclk=1; #1; sclk=0; #1;
