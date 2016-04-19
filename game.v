@@ -5,6 +5,8 @@ module paddle_movement(
 	output reg [9:0] paddle_one_y
 	);
 	
+
+	
 	reg [9:0] paddle_one_y_next;
 	wire [9:0] paddle_top, paddle_bottom;
 	
@@ -118,9 +120,12 @@ module ball_movement(
 	input [1:0] btn,
 	input [9:0] paddle_one_x, paddle_one_y,
 	input [9:0] paddle_two_x, paddle_two_y,
-	output reg [9:0] ball_x, ball_y
+	output reg [9:0] ball_x, ball_y,
+	output collided, missed
 	);
 	
+	// collided is asserted when the ball hits the paddle
+	// missed is asserted when the paddle miss the ball and the ball touches border
 	
 	// Define a size for the ball
 	localparam ball_size = 10;
@@ -167,6 +172,9 @@ module ball_movement(
 	
 	always @ (*) begin
 	
+		collided = 1'b0;
+		missed = 1'b0;
+		
 		diff_x_next = diff_x;
 		diff_y_next = diff_y;
 	
@@ -177,7 +185,13 @@ module ball_movement(
 		else if (ball_left <= 30) // NOTE!! Arbitary number for left boundary
 			diff_x_next = 1;
 		else if (ball_right >= 600 && ball_bottom >= paddle_one_top && ball_top <= padddle_one_bottom) 
+			begin
 			diff_x_next = -1;
+			collided = 1'b1;
+			end
+		else if (ball right > 620)
+			missed = 1'b1;
+			diff_x_next = -ball_x;
+			diff_y_next = -ball_y;
 	end
-	
 endmodule
