@@ -84,7 +84,7 @@ module spi_output #(parameter size=40)(
     
     reg prev_enable = 1'b0;
     reg [size-1:0] out_bytes_reg;
-    reg next_out_bytes;
+    reg [size-1:0] next_out_bytes;
     
     always @ (*)
         next_out_bytes = (enable & prev_enable) ? (out_bytes_reg << 1)
