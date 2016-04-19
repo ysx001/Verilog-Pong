@@ -14,3 +14,4 @@ NET "seven_value[5]" LOC = D17;
 NET "seven_value[6]" LOC = F18;
 NET "seven_value[7]" LOC = L18;
 NET "clk" LOC = B8;
+NET "speaker" LOC = K13;

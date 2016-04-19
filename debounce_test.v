@@ -22,26 +22,46 @@ module debounce_test(
     input wire clk, reset,
     input wire [1:0] btn,
     output [7:0] seven_value,
-    output [3:0] disp_select
+    output [3:0] disp_select,
+	 output speaker
     );
 	reg [7:0] btn_1, btn_0;
-	wire [7:0] btn_1_next, btn_0_next;
-	wire db_clk_1, db_clk_0;
+	reg [7:0] btn_0_next;
+	wire [7:0] btn_1_next;
+	wire db_clk_1, db_clk_0, q_0;
 	
-	debounce dp_btn_0 (.raw(btn[0]), .clk(clk), .reset(reset), .db_clk(db_clk_0), .q());
+	debounce dp_btn_0 (.raw(btn[0]), .clk(clk), .reset(reset), .db_clk(db_clk_0), .q(q_0));
 	debounce dp_btn_1 (.raw(btn[1]), .clk(clk), .reset(reset), .db_clk(db_clk_1), .q());
 	
+	 
 	sseg_hex btn_disp(.clk(clk), .reset(reset), .first_1(btn_0[7:4]), .first_0(btn_0[3:0]), .second_1(btn_1[7:4]),
 			.second_0(btn_1[3:0]), .disp_select(disp_select), .seven_value(seven_value));
-			
+
+	
 	always @ (posedge clk) begin
 		btn_1 = btn_1_next;
 		btn_0 = btn_0_next;
 	end
   
-	assign btn_1_next = (db_clk_1) ? btn_1 + 1 : btn_1;
-	assign btn_0_next = (db_clk_0) ? btn_0 + 1 : btn_0;
+  	always @(posedge clk)
+	if(reset) begin
+		btn_0_next <= 0;
+	end
+	else if(db_clk_0) begin
+		if(btn_0_next[3:0] == 4'b1001)begin
+			btn_0_next[3:0] <= 4'b0;
+			if(btn_0_next[7:4] == 4'b1001)
+				btn_0_next[7:4] <= 0;
+			else
+				btn_0_next[7:4] <= btn_0[7:4] + 1;
+		end
+		else
+			btn_0_next[3:0] <= btn_0[3:0] + 1;
+	end
   
+	assign btn_1_next = (db_clk_1) ? btn_1 + 1 : btn_1;
+	//assign btn_0_next = (db_clk_0) ? btn_0 + 1 : btn_0;
+	sound note(.clk25(clk), .point(q_0), .lose(db_clk_1), .speaker(speaker)); 
 endmodule
 
 module sseg_hex (input clk, reset,
@@ -111,4 +131,3 @@ module sseg_hex (input clk, reset,
 		endcase
 	end
 endmodule
-
