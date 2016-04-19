@@ -50,7 +50,7 @@ module spi(
     wire [39:0] input_sr;
     spi_input spi_in( .sclk( sclk ), .in_bytes( input_sr ), .miso( miso ) );
     
-    spi_output spi_out( .sclk(sclk), .out_bytes(out_bytes), .mosi(mosi) );
+    spi_output spi_out( .sclk(sclk), .reset( trigger ), .out_bytes(out_bytes), .mosi(mosi) );
     
     // FSM
     reg [5:0] fsm_ctr = 6'd41;
@@ -60,7 +60,7 @@ module spi(
     always @ (*) begin
         if (fsm_ctr > 40)
             if (trigger == 1)
-                next_fsm_ctr = 1;
+                next_fsm_ctr = 0;
             else
                 next_fsm_ctr = fsm_ctr;
         else
@@ -72,7 +72,7 @@ module spi(
         fsm_ctr <= next_fsm_ctr;
         out_enable <= next_out_enable;
         in_bytes <= (next_fsm_ctr == 40) ? input_sr : in_bytes;
-        cs <= (next_fsm_ctr > 40) ? 1 : 0;
+        cs <= ~next_out_enable;
     end
     
 endmodule
@@ -84,21 +84,25 @@ endmodule
 // 40 clock cycles
 module spi_output #(parameter size=40)(
     input sclk,
+    input reset,
     input [size - 1:0] out_bytes,
     output mosi);
     
-    reg [size-1:0] out_bytes_reg = {(size-1){1'b0}};
-    reg [size-1:0] next_out_bytes;
+    reg [8:0] n = 9'd0;
+    reg [8:0] next_n;
     
     always @ (*)
-        next_out_bytes = (out_bytes_reg != {(size-1){1'b0}}) ? (out_bytes_reg << 1)
-                            : out_bytes;
+        next_n =  n > 0 ? n - 1 : 0;
     
-    always @ (negedge sclk) begin
-        out_bytes_reg <= next_out_bytes;
+    always @ (negedge sclk or posedge reset) begin
+        if (reset == 1)
+            n <= size - 1;
+        else
+            n <= next_n;
     end
+            
     
-    assign mosi = out_bytes_reg[size-1];
+    assign mosi = out_bytes[n];
 
 endmodule
 
@@ -131,7 +135,7 @@ module spi_clk(
     );
     
     //parameter N=2;
-    parameter N = 6;
+    parameter N = 8;
     
     reg [N-1:0] next_ctr;
     reg [N-1:0] ctr;
@@ -141,7 +145,7 @@ module spi_clk(
     
     always @ (*) begin
         next_ctr <= ctr + 1;
-        next_sck <= enable ? next_ctr[N-1] : sck;
+        next_sck <= enable ? next_ctr[N-1] : 0;
     end
        
     always @ (posedge clk50M) begin

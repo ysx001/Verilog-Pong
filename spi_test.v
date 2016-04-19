@@ -54,5 +54,5 @@ module spi_test(
     assign trigger = bit_ctr[5];
     
     
-    display4digit hexdisplay(in_bytes[31:16], clk50M, segments, anode);
+    display4digit hexdisplay(in_bytes[15:0], clk50M, segments, anode);
 endmodule
