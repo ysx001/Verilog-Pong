@@ -56,6 +56,7 @@ module spi(
     reg [5:0] fsm_ctr = 6'd41;
     reg [5:0] next_fsm_ctr;
     reg next_out_enable;
+    reg [39:0] next_in_bytes;
     
     always @ (*) begin
         if (fsm_ctr > 40)
@@ -66,12 +67,13 @@ module spi(
         else
             next_fsm_ctr = fsm_ctr + 1;
         next_out_enable = fsm_ctr < 40 ? 1 : 0;
+        next_in_bytes = (next_fsm_ctr == 40) ? input_sr : in_bytes;
     end
     
     always @ (posedge spi_clk) begin
         fsm_ctr <= next_fsm_ctr;
         out_enable <= next_out_enable;
-        in_bytes <= (next_fsm_ctr == 40) ? input_sr : in_bytes;
+        in_bytes <= next_in_bytes;
         cs <= ~next_out_enable;
     end
     

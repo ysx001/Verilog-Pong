@@ -14,5 +14,5 @@
 #NET "HS" LOC = T4;
 #NET "VS" LOC = U3;
 
-NET "clk50M" LOC = B8;
-NET "clk50M" PERIOD = 20.0ns HIGH 50%;
+#NET "clk50M" LOC = B8;
+#NET "clk50M" PERIOD = 20.0ns HIGH 50%;
