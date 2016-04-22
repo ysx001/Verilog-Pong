@@ -1,0 +1,17 @@
+
+NET "btn[0]" LOC = B18;
+NET "btn[1]" LOC = D18;
+NET "disp_select[3]" LOC = F15; //AN3		// Add the pins for your FPGA here
+NET "disp_select[2]" LOC = C18; // AN2
+NET "disp_select[1]" LOC = H17; //AN1
+NET "disp_select[0]" LOC = F17; //AN0
+NET "seven_value[0]" LOC = C17;
+NET "seven_value[1]" LOC = H14;
+NET "seven_value[2]" LOC = J17;
+NET "seven_value[3]" LOC = G14;
+NET "seven_value[4]" LOC = D16;
+NET "seven_value[5]" LOC = D17;
+NET "seven_value[6]" LOC = F18;
+NET "seven_value[7]" LOC = L18;
+NET "clk" LOC = B8;
+NET "speaker" LOC = K13;

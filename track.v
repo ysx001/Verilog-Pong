@@ -21,19 +21,40 @@
 module track(
     input score,
 	 input reset,
+    input clk25,
     output reg [3:0] first,
     output reg [3:0] second,
-	 output SevenSegValue,
-	 output DispSelect
-    );
+	 output [7:0] SevenSegValue,
+	 output [3:0] DispSelect,
+	 output led
 
-	always @(posedge score, posedge reset)
-	if (reset) begin
+    );
+	 
+
+reg clean = 0;
+parameter N = 19; // 2^19 / 50M ~ .01s
+	reg [N:0] count;
+	
+	always @ (posedge clk25) begin
+		// Run the counter if the current input is different than the 
+		// previous one
+		count <= (score != clean) ? count + 1 : 0;
+		// Update the "clean" output value once the counter reaches the 
+		// appropriate number
+		clean <= (count[N] == 1) ? score : clean;
+		end
+assign led = clean;
+
+seven_seg myscore(.clk25(clk25),.first(first), .second(second), .reset(reset), .segments(SevenSegValue), .digitselect(DispSelect));
+
+
+	always @(posedge clk25)
+	if(reset) begin
 		first <= 0;
 		second <= 0;
 	end
-	else if(score) begin
-		if(first == 4'd9) begin
+	else if(clean) begin
+		if(first == 4'd9)begin
 			first <= 0;
 			if(second == 4'd9)
 				second <= 0;
@@ -43,8 +64,5 @@ module track(
 		else
 			first <= first + 1;
 	end
-	
-seven_seg myscore(first, second, reset, SevenSegValue, DispSelect);
-
 endmodule
 
