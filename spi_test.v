@@ -55,5 +55,5 @@ module spi_test(
     
     
     //display4digit hexdisplay({2'b00, in_bytes[5:4], in_bytes[31:17]}, clk50M, segments, anode);
-    display4digit hexdisplay(in_bytes[31:16], clk50M, segments, anode);
+    display4digit hexdisplay(in_bytes[23:8], clk50M, segments, anode);
 endmodule

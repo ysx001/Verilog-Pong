@@ -41,42 +41,51 @@ module spi(
     
     initial in_bytes = 40'b0;
     
+    // Structure
+    //  * Clock
     reg out_enable = 0;
     wire sclk;
 	wire spi_clk;
     spi_clk clk_spi( .clk50M( clk ), .enable( out_enable ), .clk( spi_clk ), .sck( sclk ));
-    assign sck = sclk; // sck is ignored when cs is 1
+    assign sck = sclk;
     
+    //  * Input, with a wire for the current shift register value
     wire [39:0] input_sr;
     spi_input spi_in( .sclk( sclk ), .reset( trigger ), .in_bytes( input_sr ), .miso( miso ) );
     
-    spi_output spi_out( .sclk(sclk), .reset( trigger ), .out_bytes(out_bytes), .mosi(mosi) );
+    //  * Output
+    spi_output spi_out( .sclk(sclk), .reset( trigger ), .out_bytes( out_bytes ), .mosi( mosi ) );
     
     // FSM
-    reg [5:0] fsm_ctr = 6'd41;
+    
+    //  * FSM counter
+    reg [5:0] fsm_ctr = 6'd50;
     reg [5:0] next_fsm_ctr;
+    
+    //  * Next value for output enable = ~(~cs) and the next set of bytes in
     reg next_out_enable;
     reg [39:0] next_in_bytes;
     
+    parameter IN_BYTES = 41;
+    
     always @ (*) begin
-        if (fsm_ctr > 40)
+        if (fsm_ctr > IN_BYTES)
             if (trigger == 1)
                 next_fsm_ctr = 0;
             else
                 next_fsm_ctr = fsm_ctr;
         else
             next_fsm_ctr = fsm_ctr + 1;
-        next_out_enable = fsm_ctr < 40 ? 1 : 0;
-        next_in_bytes = (next_fsm_ctr == 40) ? input_sr : in_bytes;
+        next_out_enable = fsm_ctr < IN_BYTES ? 1 : 0;
+        next_in_bytes = (next_fsm_ctr == IN_BYTES) ? input_sr : in_bytes;
     end
     
-    always @ (posedge spi_clk) begin
+    always @ (negedge spi_clk) begin
         fsm_ctr <= next_fsm_ctr;
         out_enable <= next_out_enable;
         in_bytes <= next_in_bytes;
         cs <= ~next_out_enable;
     end
-    
 endmodule
 
 // Shift register for SPI output
@@ -141,11 +150,11 @@ module spi_clk(
     output reg sck
     );
     
-    //parameter N=2;
+    //parameter N = 2;
     parameter N = 8;
     
-    reg [N-1:0] next_ctr;
-    reg [N-1:0] ctr;
+    reg [N-1:0] next_ctr = 0;
+    reg [N-1:0] ctr = 0;
     reg prev_enable = 0;
     reg next_sck = 0;
     initial ctr = 0;
