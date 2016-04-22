@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date:    23:50:01 04/14/2016 
+// Create Date:    09:32:34 04/19/2016 
 // Design Name: 
-// Module Name:    spi_test 
+// Module Name:    joystick 
 // Project Name: 
 // Target Devices: 
 // Tool versions: 
@@ -18,22 +18,24 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module spi_test(
+module real_joystick(
     input clk50M,
-    // Connect to SPI hardware
-    output cs,              // ~chipselect
-    output mosi,            // MOSI - master out, slave in
-    input miso,             // MISO - master in, slave out
-    output sck,             // SCK - SPI clock
-    output [7:0] segments,
-    output [3:0] anode
+    input LD1,
+    input LD2,
+    output [9:0] y,
+    // SPI
+    output sck,
+    input miso,
+    output mosi,
+    output cs
     );
     
     wire trigger;
-    reg [39:0] out_bytes = 40'b10000011_00000000_00000000_00000000_00000000;
+    wire [39:0] out_bytes;
+    assign out_bytes = {6'b100000, LD2, LD1, {32{1'b0}}};
     wire [39:0] in_bytes;
     
-    spi spi_joystick(clk50M, trigger, out_bytes, in_bytes, cs, mosi, miso, sck);
+    spi spi_conn(clk50M, trigger, out_bytes, in_bytes, cs, mosi, miso, sck);
     
     // SPI clock
     reg enable = 1;
@@ -54,7 +56,6 @@ module spi_test(
     
     assign trigger = bit_ctr[trig_N-1];
     
-    
-    //display4digit hexdisplay({2'b00, in_bytes[5:4], in_bytes[31:17]}, clk50M, segments, anode);
-    display4digit hexdisplay(in_bytes[20:5], clk50M, segments, anode);
+    // Get y value
+    assign y = {in_bytes[6:5], in_bytes[20:13]};
 endmodule
