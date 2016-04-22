@@ -48,7 +48,7 @@ endmodule
 module paddle_one_graphics(
 		input reset,
 		input [9:0] x, y, // the length of this reg depends on the length of the output of the VGA
-		input [9:0] paddle_one_y; // button for controlling the paddle
+		input [9:0] paddle_one_y, // button for controlling the paddle
 		output [2:0] red, green, // outputs the rgb color value for the paddle
 		output [1:0] blue,
 		output paddle_on // Control signal for mux for vga ouput
@@ -189,7 +189,7 @@ module ball_movement(
 			diff_x_next = -1;
 			collided = 1'b1;
 			end
-		else if (ball right > 620)
+		else if (ball_right > 620)
 			missed = 1'b1;
 			diff_x_next = -ball_x;
 			diff_y_next = -ball_y;
