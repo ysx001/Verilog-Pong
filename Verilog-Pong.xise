@@ -15,10 +15,6 @@
   <version xil_pn:ise_version="14.7" xil_pn:schema_version="2"/>
 
   <files>
-    <file xil_pn:name="ball.v" xil_pn:type="FILE_VERILOG">
-      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="0"/>
-      <association xil_pn:name="Implementation" xil_pn:seqID="0"/>
-    </file>
     <file xil_pn:name="graphics.v" xil_pn:type="FILE_VERILOG">
       <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="0"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="0"/>
@@ -103,6 +99,25 @@
     <file xil_pn:name="real_joystick.v" xil_pn:type="FILE_VERILOG">
       <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="86"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="2"/>
+    </file>
+    <file xil_pn:name="game.v" xil_pn:type="FILE_VERILOG">
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="125"/>
+      <association xil_pn:name="Implementation" xil_pn:seqID="125"/>
+    </file>
+    <file xil_pn:name="debounce.v" xil_pn:type="FILE_VERILOG">
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="126"/>
+      <association xil_pn:name="Implementation" xil_pn:seqID="126"/>
+    </file>
+    <file xil_pn:name="debounce_test.ucf" xil_pn:type="FILE_UCF">
+      <association xil_pn:name="Implementation" xil_pn:seqID="127"/>
+    </file>
+    <file xil_pn:name="debounce_test.v" xil_pn:type="FILE_VERILOG">
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="128"/>
+      <association xil_pn:name="Implementation" xil_pn:seqID="128"/>
+    </file>
+    <file xil_pn:name="sound.v" xil_pn:type="FILE_VERILOG">
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="129"/>
+      <association xil_pn:name="Implementation" xil_pn:seqID="129"/>
     </file>
   </files>
 
@@ -416,6 +431,7 @@
     <binding xil_pn:location="/spi_test" xil_pn:name="graphicstest.ucf"/>
     <binding xil_pn:location="/spi_test" xil_pn:name="spi_test.ucf"/>
     <binding xil_pn:location="/joystick_test" xil_pn:name="joystick_test.ucf"/>
+    <binding xil_pn:location="/joystick_test" xil_pn:name="debounce_test.ucf"/>
   </bindings>
 
   <libraries/>
