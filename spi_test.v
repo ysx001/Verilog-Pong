@@ -41,19 +41,19 @@ module spi_test(
     wire sck_2;
     spi_clk ctr_clk(clk50M, enable, spi_clk, sck_2);
     
-    reg [5:0] bit_ctr = 0;
-    reg [5:0] next_bit_ctr;
+    reg [8:0] bit_ctr = 0;
+    reg [8:0] next_bit_ctr;
     
     always @ (*) begin
-        next_bit_ctr = bit_ctr[5]==1 ? 6'b0 : bit_ctr + 1;
+        next_bit_ctr = bit_ctr[8]==1 ? 6'b0 : bit_ctr + 1;
     end
     
     always @ (posedge spi_clk)
         bit_ctr <= next_bit_ctr;
     
-    assign trigger = bit_ctr[5];
+    assign trigger = bit_ctr[8];
     
     
     //display4digit hexdisplay({2'b00, in_bytes[5:4], in_bytes[31:17]}, clk50M, segments, anode);
-    display4digit hexdisplay(in_bytes[23:8], clk50M, segments, anode);
+    display4digit hexdisplay(in_bytes[15:0], clk50M, segments, anode);
 endmodule
