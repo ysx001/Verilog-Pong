@@ -41,13 +41,12 @@ module graphics(
 	
 	vgapixelclock pixclk( .clk50M( clk50M ), .clk25M( clk25M ) );
 	horizcount hcount( .clk25M( clk25M ), .HS( HS ), .hcount( horizcount ), .termcount( termcount ));
-	vertcount vcount( .increment( termcount ), .VS( VS ), .vcount( vertcount ));
+	vertcount vcount( .increment( termcount ), .VS( VS ), .vcount( vertcount ), .endofframe( endofframe ));
 
 	/*************************** Drawing Code *************************************/
     wire [9:0] xpixel, ypixel;
 	assign xpixel = horizcount - 144;
 	assign ypixel = vertcount - 35;
-	assign endofframe = vertcount > 515 ? 1 : 0;
 	
     // ball graphics
 	wire [2:0] ball_red;
