@@ -74,5 +74,8 @@ fuse*
 *.wdb
 xilinxsim.ini
 
+# PlanAhead
+planAhead*
+
 # vim
 *.swp
