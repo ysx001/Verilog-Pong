@@ -18,7 +18,53 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module joystick(
+
+module joystick_paddle_movement(
+    input clk50M,
+    input reset, endofframe, // Goes from LOW to HIGH when the VGA output leaves the display area
+    // Connect to SPI hardware
+    output cs,              // ~chipselect
+    output mosi,            // MOSI - master out, slave in
+    input miso,             // MISO - master in, slave out
+    output sck,             // SCK - SPI clock
+    // position output
+    output reg [9:0] y
+    );
+    
+    // Joystick interface
+    wire ld1, ld2; // Joystick LED values
+    assign ld1 = 1;
+    assign ld2 = 1;
+    wire [9:0] joystick_y; // Position of joystick
+    
+    real_joystick spi_joystick(.clk50M(clk50M), .LD1(ld1), .LD2(ld2), .y(joystick_y),
+        .sck(sck), .mosi(mosi), .miso(miso), .cs(cs));
+	 
+     // Position update
+     reg [9:0] next_y;
+     always @ (*) begin
+        if (y > 10'h2f0)
+            next_y = y + 2;
+        else if (joystick_y > 10'h220)
+            next_y = y + 1;
+        else if (joystick_y > 10'h180)
+            next_y = y;
+        else if (joystick_y > 10'h0a0)
+            next_y = y - 1;
+        else
+            next_y = y - 2;
+    end
+    
+    always @ (posedge endofframe or posedge reset)
+        if (reset)
+            y <= 0;
+        else
+            y <= next_y;
+    
+endmodule
+
+// Theoretical, so it doesn't actually work.  real_joystick is good enough.
+module theoretical_joystick(
     input clk50M,
     input LD1,
     input LD2,

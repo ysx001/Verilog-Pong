@@ -31,7 +31,7 @@ module graphics(
     output reg [1:0] blue,
     output HS,
     output VS,
-	 output endofframe
+	output endofframe
     );
 
 	/*************************** Timing ***********************************/

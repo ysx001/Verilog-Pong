@@ -1,3 +1,56 @@
+// game.v
+// Game logic and glue
+
+/**************************** Game glue *****************************************/
+module pong_game(
+    input clk50M,
+    // PMOD SPI - joystick 1
+    output j1_cs,              // ~chipselect
+    output j1_mosi,            // MOSI - master out, slave in
+    input j1_miso,             // MISO - master in, slave out
+    output j1_sck,             // SCK - SPI clock
+    // PMOD SPI - joystick 2
+    // PMOD - sound
+    // 7 segment display
+    // VGA
+    output [2:0] red,
+    output [2:0] green,
+    output [1:0] blue,
+    output HS,
+    output VS
+    );
+    
+    wire [9:0] paddle_one_x;
+    wire [9:0] paddle_one_y;
+    wire [9:0] paddle_two_x;
+    wire [9:0] paddle_two_y;
+	 
+	wire [9:0] ball_x, ball_y;
+	assign paddle_one_x = 10'd300;
+    //assign paddle_one_y = 10'd0;
+	assign paddle_two_x = 10'b0;
+	assign paddle_two_y = 10'b0;
+	
+	wire endofframe;
+	wire reset;
+	assign reset = 0;
+     
+	graphics graphics_mod(clk50M, reset, ball_x, ball_y, paddle_one_x, paddle_one_y, paddle_two_x, paddle_two_y, 
+	    red, green, blue, HS, VS, endofframe);
+	
+	ball_movement ball_mv(.endofframe( endofframe ), .paddle_one_x( paddle_one_x), 
+		.paddle_one_y( paddle_one_y ), .paddle_two_x( paddle_two_x ), 
+		.paddle_two_y( paddle_two_y ), .ball_x( ball_x ), .ball_y( ball_y ));
+    
+    joystick_paddle_movement paddle_mv(.endofframe( endofframe ), .reset( reset ), .cs( j1_cs ), .mosi( j1_mosi ), 
+        .miso( j1_miso ), .sck( j1_sck ), .y ( paddle_one_y ));
+endmodule
+
+
+/******************************* Paddles *************************************************/
+
+`define PADDLE_WIDTH 5
+`define PADDLE_LENGTH 50
 
 module paddle_movement(
 	input reset, endofframe, // Goes from LOW to HIGH when the VGA output leaves the display area
@@ -12,7 +65,7 @@ module paddle_movement(
 	
 	//paddle top and bottom
 	assign paddle_top = paddle_one_y;
-	assign paddle_bottom = paddle_one_y + paddle_length - 1;
+	assign paddle_bottom = paddle_one_y + `PADDLE_LENGTH - 1;
 	
 	
 	always @ (posedge endofframe, posedge reset)
@@ -56,20 +109,15 @@ module paddle_one_graphics(
 
 	// Define size for a paddle 
 
-	localparam paddle_width = 5;
-	localparam paddle_length = 50;
 	localparam paddle_x = 600;
 	
 	wire [9:0] paddle_top, paddle_bottom;
-	reg [9:0] paddle_one_y, paddle_one_y_next;
-		
-
-
+    
 	//paddle on or off
 	assign paddle_top = paddle_one_y;
-	assign paddle_bottom = paddle_one_y + paddle_length - 1;
+	assign paddle_bottom = paddle_one_y + `PADDLE_LENGTH - 1;
 
-	assign paddle_on = (x >= paddle_x && x <= paddle_x + paddle_width && 
+	assign paddle_on = (x >= paddle_x && x <= paddle_x + `PADDLE_WIDTH && 
 					  y >= paddle_top && y <= paddle_bottom);
 	
 	
@@ -121,7 +169,7 @@ module ball_movement(
 	input [9:0] paddle_one_x, paddle_one_y,
 	input [9:0] paddle_two_x, paddle_two_y,
 	output reg [9:0] ball_x, ball_y,
-	output collided, missed
+	output reg collided, missed
 	);
 	
 	// collided is asserted when the ball hits the paddle
@@ -184,7 +232,7 @@ module ball_movement(
 			diff_y_next = -1;
 		else if (ball_left <= 30) // NOTE!! Arbitary number for left boundary
 			diff_x_next = 1;
-		else if (ball_right >= 600 && ball_bottom >= paddle_one_top && ball_top <= padddle_one_bottom) 
+		else if (ball_right >= 600 && ball_bottom >= paddle_one_top && ball_top <= paddle_one_bottom) 
 			begin
 			diff_x_next = -1;
 			collided = 1'b1;
