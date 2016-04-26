@@ -20,3 +20,10 @@ NET "cs" LOC = L15; // JA1
 NET "mosi" LOC = K12; // JA2
 NET "miso" LOC = L17; // JA3
 NET "sck" LOC = M15; // JA4
+
+// Indicator LEDs
+NET "leds[0]" LOC = J14;
+NET "leds[1]" LOC = J15;
+NET "leds[2]" LOC = K15;
+NET "leds[3]" LOC = K14;
+NET "leds[4]" LOC = E17;

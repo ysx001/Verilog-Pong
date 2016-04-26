@@ -26,7 +26,8 @@ module joystick_test(
     input miso,             // MISO - master in, slave out
     output sck,             // SCK - SPI clock
     output [7:0] segments,
-    output [3:0] anode
+    output [3:0] anode,
+	 output [4:0] leds
     );
     
     wire ld1, ld2;
@@ -40,4 +41,10 @@ module joystick_test(
     //display4digit hexdisplay({{6{1'b0}}, {10{1'b1}}}, clk50M, segments, anode);
     
     display4digit hexdisplay({{6{1'b0}}, y}, clk50M, segments, anode);
+	 
+	 assign leds[0] = (y > 10'h02f0) ? 1 : 0;
+	 assign leds[1] = (y < 10'h02f0 && y > 10'h0220) ? 1 : 0;
+	 assign leds[2] = (y < 10'h0220 && y > 10'h0180) ? 1 : 0;
+	 assign leds[3] = (y < 10'h0180 && y > 10'h00a0) ? 1 : 0;
+	 assign leds[4] = (y < 10'h00a0) ? 1 : 0;
 endmodule
