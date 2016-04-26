@@ -117,6 +117,7 @@ endmodule
 module ball_movement(
 	input reset, 
 	input endofframe, // Goes from LOW to HIGH when the VGA output leaves the display area
+	input restart, // set the ball to the center of the screen when game restarts
 	input [1:0] btn,
 	input [9:0] paddle_one_x, paddle_one_y,
 	input [9:0] paddle_two_x, paddle_two_y,
@@ -131,7 +132,7 @@ module ball_movement(
 	localparam ball_size = 10;
 	wire [9:0] ball_left, ball_right, ball_top, ball_bottom;
 	
-	reg [9:0] ball_x_next, ball_y_next;
+	wire [9:0] ball_x_next, ball_y_next;
 	
 	reg [9:0] diff_x, diff_y; // difference in x and y -> for tracking x_vel and y_vel
 	reg [9:0] diff_x_next, diff_y_next;
@@ -165,10 +166,9 @@ module ball_movement(
 	
 	// ball movement
 	
-	always @ (*) begin //when a frame has ended
-			ball_x_next = ball_x + diff_x;
-			ball_y_next = ball_y + diff_y;
-	end
+	 //Set the ball to the center if restart else change position when a frame has ended
+	assign ball_x_next = (restart) ? 320 : (endofframe) ? ball_x + diff_x : ball_x;
+	assign ball_y_next = (restart) ? 240 : (endofframe) ? ball_y + diff_y : ball_y;
 	
 	always @ (*) begin
 	
@@ -177,8 +177,13 @@ module ball_movement(
 		
 		diff_x_next = diff_x;
 		diff_y_next = diff_y;
+		if (restart)
+			begin
+				diff_x_next = -1;
+				diff_y_next = 1;
+			end
 	
-		if (ball_top <= 3) // top
+		else if (ball_top <= 3) // top
 			diff_y_next = 1;
 		else if (ball_bottom >= 477) // bottom
 			diff_y_next = -1;
