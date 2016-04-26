@@ -35,15 +35,15 @@ module pong_game(
 	wire reset;
 	assign reset = 0;
      
-	graphics graphics_mod(clk50M, reset, ball_x, ball_y, paddle_one_x, paddle_one_y, paddle_two_x, paddle_two_y, 
+	graphics graphics_mod(clk50M, reset, ball_x, ball_y, paddle_one_y, paddle_two_y, 
 	    red, green, blue, HS, VS, endofframe);
 	
 	ball_movement ball_mv(.endofframe( endofframe ), .paddle_one_x( paddle_one_x), 
 		.paddle_one_y( paddle_one_y ), .paddle_two_x( paddle_two_x ), 
 		.paddle_two_y( paddle_two_y ), .ball_x( ball_x ), .ball_y( ball_y ));
     
-    joystick_paddle_movement paddle_mv(.endofframe( endofframe ), .reset( reset ), .cs( j1_cs ), .mosi( j1_mosi ), 
-        .miso( j1_miso ), .sck( j1_sck ), .y ( paddle_one_y ));
+    joystick_paddle_movement paddle_mv(.clk50M( clk50M ), .endofframe( endofframe ), .reset( reset ), 
+        .cs( j1_cs ), .mosi( j1_mosi ), .miso( j1_miso ), .sck( j1_sck ), .y ( paddle_one_y ));
 endmodule
 
 
@@ -51,6 +51,7 @@ endmodule
 
 `define PADDLE_WIDTH 5
 `define PADDLE_LENGTH 50
+`define PADDLE_ONE_X 10'd600
 
 module paddle_movement(
 	input reset, endofframe, // Goes from LOW to HIGH when the VGA output leaves the display area
@@ -108,8 +109,6 @@ module paddle_one_graphics(
 		);
 
 	// Define size for a paddle 
-
-	localparam paddle_x = 600;
 	
 	wire [9:0] paddle_top, paddle_bottom;
     
@@ -117,7 +116,7 @@ module paddle_one_graphics(
 	assign paddle_top = paddle_one_y;
 	assign paddle_bottom = paddle_one_y + `PADDLE_LENGTH - 1;
 
-	assign paddle_on = (x >= paddle_x && x <= paddle_x + `PADDLE_WIDTH && 
+	assign paddle_on = (x >= `PADDLE_ONE_X && x <= `PADDLE_ONE_X + `PADDLE_WIDTH && 
 					  y >= paddle_top && y <= paddle_bottom);
 	
 	
