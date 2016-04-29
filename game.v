@@ -1,6 +1,11 @@
 // game.v
 // Game logic and glue
 
+`define PADDLE_WIDTH 5
+`define PADDLE_LENGTH 50
+`define PADDLE_ONE_X 10'd600
+`define PADDLE_TWO_X 10'd5
+
 /**************************** Game glue *****************************************/
 module pong_game(
     input clk50M,
@@ -10,6 +15,10 @@ module pong_game(
     input j1_miso,             // MISO - master in, slave out
     output j1_sck,             // SCK - SPI clock
     // PMOD SPI - joystick 2
+	 output j2_cs,
+	 output j2_mosi,
+	 input j2_miso,
+	 output j2_sck,
     // PMOD - sound
     // 7 segment display
     // VGA
@@ -26,10 +35,10 @@ module pong_game(
     wire [9:0] paddle_two_y;
 	 
 	wire [9:0] ball_x, ball_y;
-	assign paddle_one_x = 10'd300;
+	assign paddle_one_x = `PADDLE_ONE_X;
     //assign paddle_one_y = 10'd0;
-	assign paddle_two_x = 10'b0;
-	assign paddle_two_y = 10'b0;
+	assign paddle_two_x = `PADDLE_TWO_X;
+	//assign paddle_two_y = 10'b0;
 	
 	wire endofframe;
 	wire reset;
@@ -42,16 +51,15 @@ module pong_game(
 		.paddle_one_y( paddle_one_y ), .paddle_two_x( paddle_two_x ), 
 		.paddle_two_y( paddle_two_y ), .ball_x( ball_x ), .ball_y( ball_y ));
     
-    joystick_paddle_movement paddle_mv(.clk50M( clk50M ), .endofframe( endofframe ), .reset( reset ), 
+    joystick_paddle_movement paddle_mv_1(.clk50M( clk50M ), .endofframe( endofframe ), .reset( reset ), 
         .cs( j1_cs ), .mosi( j1_mosi ), .miso( j1_miso ), .sck( j1_sck ), .y ( paddle_one_y ));
+    
+    joystick_paddle_movement paddle_mv_2(.clk50M( clk50M ), .endofframe( endofframe ), .reset( reset ), 
+        .cs( j2_cs ), .mosi( j2_mosi ), .miso( j2_miso ), .sck( j2_sck ), .y ( paddle_two_y ));
 endmodule
 
 
 /******************************* Paddles *************************************************/
-
-`define PADDLE_WIDTH 5
-`define PADDLE_LENGTH 50
-`define PADDLE_ONE_X 10'd600
 
 module paddle_movement(
 	input reset, endofframe, // Goes from LOW to HIGH when the VGA output leaves the display area
@@ -99,7 +107,7 @@ endmodule
 	
 	
 
-module paddle_one_graphics(
+module paddle_graphics #(parameter x_val=5)(
 		input reset,
 		input [9:0] x, y, // the length of this reg depends on the length of the output of the VGA
 		input [9:0] paddle_one_y, // button for controlling the paddle
@@ -116,7 +124,7 @@ module paddle_one_graphics(
 	assign paddle_top = paddle_one_y;
 	assign paddle_bottom = paddle_one_y + `PADDLE_LENGTH - 1;
 
-	assign paddle_on = (x >= `PADDLE_ONE_X && x <= `PADDLE_ONE_X + `PADDLE_WIDTH && 
+	assign paddle_on = (x >= x_val && x <= x_val + `PADDLE_WIDTH && 
 					  y >= paddle_top && y <= paddle_bottom);
 	
 	

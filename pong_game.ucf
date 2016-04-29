@@ -3,10 +3,14 @@ NET "clk50M" LOC = B8;
 NET "clk50M" PERIOD = 20.0ns HIGH 50%;
 
 // Joystick
-NET "j1_cs" LOC = L15; // JA1
-NET "j1_mosi" LOC = K12; // JA2
-NET "j1_miso" LOC = L17; // JA3
-NET "j1_sck" LOC = M15; // JA4
+NET "j2_cs" LOC = L15; // JA1
+NET "j2_mosi" LOC = K12; // JA2
+NET "j2_miso" LOC = L17; // JA3
+NET "j2_sck" LOC = M15; // JA4
+NET "j1_cs" LOC = M13; // JB1
+NET "j1_mosi" LOC = R18; // JB2
+NET "j1_miso" LOC = R15; // JB3
+NET "j1_sck" LOC = T17; // JB4
 
 // VGA
 NET "red[0]" LOC = R9;

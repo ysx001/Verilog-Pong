@@ -67,8 +67,13 @@ module graphics(
     wire [2:0] p1_red, p1_green;
     wire [1:0] p1_blue;
     wire p1_on;
-    paddle_one_graphics p1_draw(.x(xpixel), .y(ypixel), .paddle_one_y(paddle_one_y), 
+    paddle_graphics #(5) p1_draw(.x(xpixel), .y(ypixel), .paddle_one_y(paddle_one_y), 
         .red(p1_red), .green(p1_green), .blue(p1_blue), .paddle_on(p1_on));
+    wire [2:0] p2_red, p2_green;
+    wire [1:0] p2_blue;
+    wire p2_on;
+    paddle_graphics #(600) p2_draw(.x(xpixel), .y(ypixel), .paddle_one_y(paddle_two_y), 
+        .red(p2_red), .green(p2_green), .blue(p2_blue), .paddle_on(p2_on));
 	
 	/*************************** Pixels ************************************/
 	// Pixel values are buffered in registers for one clock cycle to avoid timing problems
@@ -112,6 +117,11 @@ module graphics(
                 next_red = p1_red;
                 next_green = p1_green;
                 next_blue = p1_blue;
+            end
+            else if (p2_on) begin
+                next_red = p2_red;
+                next_green = p2_green;
+                next_blue = p2_blue;
             end
 			else begin
 				next_red = 3'b001;
