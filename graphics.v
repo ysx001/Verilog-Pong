@@ -67,7 +67,7 @@ module graphics(
     wire [2:0] p1_red, p1_green;
     wire [1:0] p1_blue;
     wire p1_on;
-    paddle_graphics #(5) p1_draw(.x(xpixel), .y(ypixel), .paddle_one_y(paddle_one_y), 
+    paddle_graphics #(25) p1_draw(.x(xpixel), .y(ypixel), .paddle_one_y(paddle_one_y), 
         .red(p1_red), .green(p1_green), .blue(p1_blue), .paddle_on(p1_on));
     wire [2:0] p2_red, p2_green;
     wire [1:0] p2_blue;

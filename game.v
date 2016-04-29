@@ -15,10 +15,10 @@ module pong_game(
     input j1_miso,             // MISO - master in, slave out
     output j1_sck,             // SCK - SPI clock
     // PMOD SPI - joystick 2
-	 output j2_cs,
-	 output j2_mosi,
-	 input j2_miso,
-	 output j2_sck,
+	output j2_cs,
+	output j2_mosi,
+	input j2_miso,
+	output j2_sck,
     // PMOD - sound
     // 7 segment display
     // VGA
@@ -36,9 +36,7 @@ module pong_game(
 	 
 	wire [9:0] ball_x, ball_y;
 	assign paddle_one_x = `PADDLE_ONE_X;
-    //assign paddle_one_y = 10'd0;
 	assign paddle_two_x = `PADDLE_TWO_X;
-	//assign paddle_two_y = 10'b0;
 	
 	wire endofframe;
 	wire reset;
@@ -179,9 +177,12 @@ module ball_movement(
 	output reg collided, missed
 	);
 	
+    initial ball_x = 10'd50;
+    initial ball_y = 10'd50;
+    
 	// collided is asserted when the ball hits the paddle
 	// missed is asserted when the paddle miss the ball and the ball touches border
-	
+    
 	// Define a size for the ball
 	localparam ball_size = 10;
 	wire [9:0] ball_left, ball_right, ball_top, ball_bottom;
@@ -189,13 +190,17 @@ module ball_movement(
 	reg [9:0] ball_x_next, ball_y_next;
 	
 	reg [9:0] diff_x, diff_y; // difference in x and y -> for tracking x_vel and y_vel
-	reg [9:0] diff_x_next, diff_y_next;
-	
-	wire [9:0] paddle_top, paddle_bottom;
+	initial diff_x = 1;
+    initial diff_y = 1;
+    reg [9:0] diff_x_next, diff_y_next;
 	
 	localparam paddle_length = 50;
+    wire [9:0] paddle_one_top, paddle_one_bottom;
 	assign paddle_one_top = paddle_one_y;
 	assign paddle_one_bottom = paddle_one_y + paddle_length - 1;
+    wire [9:0] paddle_two_top, paddle_two_bottom;
+	assign paddle_two_top = paddle_two_y;
+	assign paddle_two_bottom = paddle_two_y + paddle_length - 1;
 	
 	always @ (posedge endofframe, posedge reset)
 		if (reset) begin
@@ -221,8 +226,8 @@ module ball_movement(
 	// ball movement
 	
 	always @ (*) begin //when a frame has ended
-			ball_x_next = ball_x + diff_x;
-			ball_y_next = ball_y + diff_y;
+			ball_x_next = ball_x + 2*diff_x;
+			ball_y_next = ball_y + 2*diff_y;
 	end
 	
 	always @ (*) begin
@@ -233,20 +238,25 @@ module ball_movement(
 		diff_x_next = diff_x;
 		diff_y_next = diff_y;
 	
-		if (ball_top <= 3) // top
+		if (ball_top <= 10) // top
 			diff_y_next = 1;
-		else if (ball_bottom >= 477) // bottom
+		else if (ball_bottom >= 470) // bottom
 			diff_y_next = -1;
-		else if (ball_left <= 30) // NOTE!! Arbitary number for left boundary
+		else if (ball_left <= 30 && (ball_bottom >= paddle_two_top 
+                && ball_top <= paddle_two_top)) begin
 			diff_x_next = 1;
-		else if (ball_right >= 600 && ball_bottom >= paddle_one_top && ball_top <= paddle_one_bottom) 
-			begin
+            collided = 1'b1;
+        end
+		else if (ball_right >= `PADDLE_ONE_X && (ball_bottom >= paddle_one_top 
+                && ball_top <= paddle_one_bottom)) begin
 			diff_x_next = -1;
 			collided = 1'b1;
 			end
-		else if (ball_right > 620)
+        else if (ball_left <= 2)
+            diff_x_next = 1;
+		else if (ball_right > 630) begin
 			missed = 1'b1;
-			diff_x_next = -ball_x;
-			diff_y_next = -ball_y;
+			diff_x_next = -1;
+        end
 	end
 endmodule
