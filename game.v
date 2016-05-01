@@ -78,53 +78,6 @@ endmodule
 
 
 /******************************* Paddles *************************************************/
-
-module paddle_movement(
-	input reset, endofframe, // Goes from LOW to HIGH when the VGA output leaves the display area
-	input [1:0] btn,
-	output reg [9:0] paddle_one_y
-	);
-	
-
-	
-	reg [9:0] paddle_one_y_next;
-	wire [9:0] paddle_top, paddle_bottom;
-	
-	//paddle top and bottom
-	assign paddle_top = paddle_one_y;
-	assign paddle_bottom = paddle_one_y + `PADDLE_LENGTH - 1;
-	
-	
-	always @ (posedge endofframe, posedge reset)
-		if (reset) begin
-			paddle_one_y <= 0;
-		  end
-		else
-		  begin
-			paddle_one_y <= paddle_one_y_next;
-		  end
-			
-	
-	// paddle movement
-	
-	always @ (*) begin
-
-		paddle_one_y_next = paddle_one_y;
-
-		if(endofframe) begin //when a frame has ended
-	
-			if (btn[1] & (paddle_bottom < 479 - 5)) // 479 is the lower boundary and 5 is the pixel displacement
-				paddle_one_y_next = paddle_one_y + 5; 
-			else if (btn[0] & (paddle_top > 5)) // bottom
-				paddle_one_y_next = paddle_one_y - 5;
-		end
-	end
-
-endmodule
-	
-	
-	
-
 module paddle_graphics #(parameter x_val=5)(
 		input reset,
 		input [9:0] x, y, // the length of this reg depends on the length of the output of the VGA
@@ -153,10 +106,9 @@ module paddle_graphics #(parameter x_val=5)(
 
 endmodule
 
-
+/********************* Ball ****************************/
 
 `define BALL_SIZE 10
-
 
 // Graphics module for the ball
 module ball_graphics(
