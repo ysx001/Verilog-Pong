@@ -41,13 +41,16 @@ module pong_game(
 	assign paddle_two_x = `PADDLE_TWO_X;
 	
 	wire endofframe;
+    wire endofframe_2;
 	wire reset;
 	assign reset = 0;
+    
+    shift_delay eof_delay(clk50M, endofframe, endofframe_2);
     
 	graphics graphics_mod(clk50M, reset, ball_x, ball_y, paddle_one_y, paddle_two_y, 
 	    red, green, blue, HS, VS, endofframe);
 	
-	ball_movement ball_mv(.endofframe( endofframe ), .paddle_one_x( paddle_one_x), 
+	ball_movement ball_mv(.endofframe( endofframe_2 ), .paddle_one_x( paddle_one_x), 
 		.paddle_one_y( paddle_one_y ), .paddle_two_x( paddle_two_x ), 
 		.paddle_two_y( paddle_two_y ), .ball_x( ball_x ), .ball_y( ball_y ),
         .collided( collision ));
@@ -57,6 +60,20 @@ module pong_game(
     
     joystick_paddle_movement paddle_mv_2(.clk50M( clk50M ), .endofframe( endofframe ), .reset( reset ), 
         .cs( j2_cs ), .mosi( j2_mosi ), .miso( j2_miso ), .sck( j2_sck ), .y ( paddle_two_y ));
+endmodule
+
+module shift_delay(
+    input clk50M,
+    input signal,
+    output reg signal_delayed);
+    
+    reg next_signal_delayed;
+    
+    always @ (posedge clk50M) begin
+        next_signal_delayed <= signal;
+        signal_delayed <= next_signal_delayed;
+    end
+
 endmodule
 
 
