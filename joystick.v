@@ -41,18 +41,28 @@ module joystick_paddle_movement(
         .sck(sck), .mosi(mosi), .miso(miso), .cs(cs));
 	 
      // Position update
+     parameter down_fast_boundary = 10'h300;
+     parameter down_slow_boundary = 10'h220;
+     parameter up_slow_boundary = 10'h180;
+     parameter up_fast_boundary = 10'h0f0;
+     
+     initial y = 10'd40;
      reg [9:0] next_y;
      always @ (*) begin
-        if (y > 10'h2f0)
-            next_y = y + 2;
-        else if (joystick_y > 10'h220)
-            next_y = y + 1;
-        else if (joystick_y > 10'h180)
+        if (y < 10 && joystick_y > down_slow_boundary)
             next_y = y;
-        else if (joystick_y > 10'h0a0)
+        else if (y + 50 > 470 && joystick_y < up_slow_boundary)
+            next_y = y;
+        else if (joystick_y > down_fast_boundary)
+            next_y = y - 3;
+        else if (joystick_y > down_slow_boundary)
             next_y = y - 1;
+        else if (joystick_y > up_slow_boundary)
+            next_y = y;
+        else if (joystick_y > up_fast_boundary)
+            next_y = y + 1;
         else
-            next_y = y - 2;
+            next_y = y + 3;
     end
     
     always @ (posedge endofframe or posedge reset)

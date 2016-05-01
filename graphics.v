@@ -22,9 +22,7 @@ module graphics(
     input clk50M, reset,
     input [9:0] ball_x,
     input [9:0] ball_y,
-    input [9:0] paddle_one_x,
     input [9:0] paddle_one_y,
-    input [9:0] paddle_two_x,
     input [9:0] paddle_two_y,
     output reg [2:0] red,
     output reg [2:0] green,
@@ -43,13 +41,12 @@ module graphics(
 	
 	vgapixelclock pixclk( .clk50M( clk50M ), .clk25M( clk25M ) );
 	horizcount hcount( .clk25M( clk25M ), .HS( HS ), .hcount( horizcount ), .termcount( termcount ));
-	vertcount vcount( .increment( termcount ), .VS( VS ), .vcount( vertcount ));
+	vertcount vcount( .increment( termcount ), .VS( VS ), .vcount( vertcount ), .endofframe( endofframe ));
 
 	/*************************** Drawing Code *************************************/
     wire [9:0] xpixel, ypixel;
 	assign xpixel = horizcount - 144;
 	assign ypixel = vertcount - 35;
-	assign endofframe = vertcount > 515 ? 1 : 0;
 	
     // ball graphics
 	wire [2:0] ball_red;
@@ -65,6 +62,18 @@ module graphics(
     wire board_on;
 	board_graphics drawboard(.x( xpixel ), .y( ypixel ), .board_on( board_on ), 
         .r( board_red ), .g( board_green ), .b( board_blue ));
+    
+    // paddle graphics
+    wire [2:0] p1_red, p1_green;
+    wire [1:0] p1_blue;
+    wire p1_on;
+    paddle_graphics #(25) p1_draw(.x(xpixel), .y(ypixel), .paddle_one_y(paddle_one_y), 
+        .red(p1_red), .green(p1_green), .blue(p1_blue), .paddle_on(p1_on));
+    wire [2:0] p2_red, p2_green;
+    wire [1:0] p2_blue;
+    wire p2_on;
+    paddle_graphics #(600) p2_draw(.x(xpixel), .y(ypixel), .paddle_one_y(paddle_two_y), 
+        .red(p2_red), .green(p2_green), .blue(p2_blue), .paddle_on(p2_on));
 	
 	/*************************** Pixels ************************************/
 	// Pixel values are buffered in registers for one clock cycle to avoid timing problems
@@ -103,6 +112,16 @@ module graphics(
                 next_red = board_red;
                 next_green = board_green;
                 next_blue = board_blue;
+            end
+            else if (p1_on) begin
+                next_red = p1_red;
+                next_green = p1_green;
+                next_blue = p1_blue;
+            end
+            else if (p2_on) begin
+                next_red = p2_red;
+                next_green = p2_green;
+                next_blue = p2_blue;
             end
 			else begin
 				next_red = 3'b001;
