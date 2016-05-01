@@ -3,8 +3,8 @@
 
 `define PADDLE_WIDTH 5
 `define PADDLE_LENGTH 50
-`define PADDLE_ONE_X 10'd600
-`define PADDLE_TWO_X 10'd5
+`define PADDLE_ONE_X 10'd30
+`define PADDLE_TWO_X 10'd600
 
 /**************************** Game glue *****************************************/
 module pong_game(
@@ -15,10 +15,10 @@ module pong_game(
     input j1_miso,             // MISO - master in, slave out
     output j1_sck,             // SCK - SPI clock
     // PMOD SPI - joystick 2
-	output j2_cs,
-	output j2_mosi,
-	input j2_miso,
-	output j2_sck,
+    output j2_cs,
+    output j2_mosi,
+    input j2_miso,
+    output j2_sck,
     // PMOD - sound
     // 7 segment display
     // VGA
@@ -26,7 +26,9 @@ module pong_game(
     output [2:0] green,
     output [1:0] blue,
     output HS,
-    output VS
+    output VS,
+    // Other
+    output collision
     );
     
     wire [9:0] paddle_one_x;
@@ -41,13 +43,14 @@ module pong_game(
 	wire endofframe;
 	wire reset;
 	assign reset = 0;
-     
+    
 	graphics graphics_mod(clk50M, reset, ball_x, ball_y, paddle_one_y, paddle_two_y, 
 	    red, green, blue, HS, VS, endofframe);
 	
 	ball_movement ball_mv(.endofframe( endofframe ), .paddle_one_x( paddle_one_x), 
 		.paddle_one_y( paddle_one_y ), .paddle_two_x( paddle_two_x ), 
-		.paddle_two_y( paddle_two_y ), .ball_x( ball_x ), .ball_y( ball_y ));
+		.paddle_two_y( paddle_two_y ), .ball_x( ball_x ), .ball_y( ball_y ),
+        .collided( collision ));
     
     joystick_paddle_movement paddle_mv_1(.clk50M( clk50M ), .endofframe( endofframe ), .reset( reset ), 
         .cs( j1_cs ), .mosi( j1_mosi ), .miso( j1_miso ), .sck( j1_sck ), .y ( paddle_one_y ));
@@ -198,6 +201,7 @@ module ball_movement(
     wire [9:0] paddle_one_top, paddle_one_bottom;
 	assign paddle_one_top = paddle_one_y;
 	assign paddle_one_bottom = paddle_one_y + paddle_length - 1;
+    
     wire [9:0] paddle_two_top, paddle_two_bottom;
 	assign paddle_two_top = paddle_two_y;
 	assign paddle_two_bottom = paddle_two_y + paddle_length - 1;
@@ -241,19 +245,21 @@ module ball_movement(
 		if (ball_top <= 10) // top
 			diff_y_next = 1;
 		else if (ball_bottom >= 470) // bottom
-			diff_y_next = -1;
-		else if (ball_left <= 30 && (ball_bottom >= paddle_two_top 
-                && ball_top <= paddle_two_top)) begin
+			diff_y_next = -1; 
+        else if (ball_left <= `PADDLE_ONE_X && (ball_bottom >= paddle_one_top 
+            && ball_top <= paddle_one_bottom)) begin
 			diff_x_next = 1;
             collided = 1'b1;
-        end
-		else if (ball_right >= `PADDLE_ONE_X && (ball_bottom >= paddle_one_top 
-                && ball_top <= paddle_one_bottom)) begin
+        end 
+		else if (ball_right >= `PADDLE_TWO_X && (ball_bottom >= paddle_two_top 
+                && ball_top <= paddle_two_bottom)) begin
 			diff_x_next = -1;
 			collided = 1'b1;
 			end
-        else if (ball_left <= 2)
+        else if (ball_left <= 2) begin
             diff_x_next = 1;
+            missed = 1'b1;
+        end
 		else if (ball_right > 630) begin
 			missed = 1'b1;
 			diff_x_next = -1;

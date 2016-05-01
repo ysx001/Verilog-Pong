@@ -26,3 +26,6 @@ NET "blue[1]" LOC = U4;
 
 NET "HS" LOC = T4;
 NET "VS" LOC = U3;
+
+// Other
+NET "collision" LOC = J14;
