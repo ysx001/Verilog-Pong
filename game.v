@@ -218,20 +218,20 @@ module ball_movement(
         else if (ball_left <= `PADDLE_ONE_X && (ball_bottom >= paddle_one_top 
             && ball_top <= paddle_one_bottom)) begin
 			diff_x_next = 1;
-            collided = 1'b1;
+            collided = 2'b10;
         end 
 		else if (ball_right >= `PADDLE_TWO_X && (ball_bottom >= paddle_two_top 
                 && ball_top <= paddle_two_bottom)) begin
 			diff_x_next = -1;
-			collided = 1'b1;
+			collided = 2'b01;
 			end
         else if (ball_left <= 2) begin
-            diff_x_next = 1;
-            missed = 1'b1;
+            diff_x_next = 0;
+            missed = 2'b10;
         end
 		else if (ball_right > 630) begin
-			missed = 1'b1;
-			diff_x_next = -1;
+			missed = 2'b01;
+			diff_x_next = 0;
         end
 	end
 endmodule
