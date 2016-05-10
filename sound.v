@@ -20,8 +20,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 module sound(
     input clk25,
-	 input point,
-	 input lose,
+	 input[1:0] point,
+	 input[1:0] lose,
 	 output speaker
 	 );
 
@@ -33,14 +33,14 @@ always @(posedge clk25)
 		win <= 0;
 		end
 	else
-		if (point)
+		if (point != 2'b00)
 			win <= win + 1;
 			
 always @(posedge clk25)
 	counter <= counter + 1;
 
 assign speaker = (point && ~win[2]) ? counter[16]:
-			        (lose) ? counter[15]:
+			        (lose != 2'b00) ? counter[15]:
 					  (win[2] ) ? counter[14]:
 						0;
 

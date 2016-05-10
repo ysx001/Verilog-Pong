@@ -40,6 +40,7 @@ module graphicstest(
 	 
 	 wire endofframe;
 	 wire reset;
+	 wire [1:0] collided, missed;
 	 assign reset = 0;
      
 	 graphics graphics_mod(clk50M, reset, ball_x, ball_y, paddle_one_x, paddle_one_y, paddle_two_x, paddle_two_y, 
@@ -47,6 +48,8 @@ module graphicstest(
 	
 	ball_movement ball_mv(.endofframe( endofframe ), .paddle_one_x( paddle_one_x), 
 		.paddle_one_y( paddle_one_y ), .paddle_two_x( paddle_two_x ), 
-		.paddle_two_y( paddle_two_y ), .ball_x( ball_x ), .ball_y( ball_y ));
+		.paddle_two_y( paddle_two_y ), .ball_x( ball_x ), .ball_y( ball_y ), .collided(collided), .missed(missed));
+
+	
 endmodule
 
