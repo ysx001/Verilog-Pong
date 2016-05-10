@@ -75,6 +75,9 @@ module graphics(
     paddle_graphics #(600) p2_draw(.x(xpixel), .y(ypixel), .paddle_one_y(paddle_two_y), 
         .red(p2_red), .green(p2_green), .blue(p2_blue), .paddle_on(p2_on));
 	
+
+
+
 	/*************************** Pixels ************************************/
 	// Pixel values are buffered in registers for one clock cycle to avoid timing problems
 	reg [2:0] next_red;
