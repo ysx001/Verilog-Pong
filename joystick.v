@@ -28,7 +28,8 @@ module joystick_paddle_movement(
     input miso,             // MISO - master in, slave out
     output sck,             // SCK - SPI clock
     // position output
-    output reg [9:0] y
+    output reg [9:0] y,
+	 output reg isMoving
     );
     
     // Joystick interface
@@ -48,6 +49,8 @@ module joystick_paddle_movement(
      
      initial y = 10'd40;
      reg [9:0] next_y;
+     wire next_isMoving;
+	  
      always @ (*) begin
         if (y < 10 && joystick_y > down_slow_boundary)
             next_y = y;
@@ -65,11 +68,20 @@ module joystick_paddle_movement(
             next_y = y + 3;
     end
     
+    // Joystick is stationary if it is between up_slow_boundary and 
+    // up_fast_boundary.  Otherwise, it is considered to be "moving."
+    assign next_isMoving = 
+        (joystick_y > down_slow_boundary || joystick_y < up_slow_boundary) ? 1 : 0;
+    
     always @ (posedge endofframe or posedge reset)
-        if (reset)
+        if (reset) begin
             y <= 0;
-        else
+            isMoving = 0;
+        end
+        else begin
             y <= next_y;
+            isMoving = next_isMoving;
+        end
     
 endmodule
 
