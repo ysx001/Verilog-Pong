@@ -43,9 +43,11 @@ NET "seven_value[6]" LOC = F18;
 NET "seven_value[7]" LOC = L18;
 
 //Speaker
-NET "speaker" LOC = K13;
+NET "speaker" LOC = G15;
 
 
 //Debug
 NET "isMoving" LOC = J15;
 NET "restart" LOC = J14;
+NET "collided[0]" LOC = K15;
+NET "collided[1]" LOC = K14;

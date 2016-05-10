@@ -36,7 +36,7 @@ module fsm(
     reg ball, ball_next;
 	 
 	 reg timer_begin;
-	 wire timer_end, timer_tick;
+	 wire timer_end;
   
   reg [6:0] timer, timer_next;
   
@@ -74,11 +74,14 @@ module fsm(
     
   always @ (*)
   begin
-    
+    restart = 1'b1;
+	 score_clr = 1'b0;
+	 state_next = state;
+	 ball_next = ball;
     case (state)
       start:
 		 begin
-		    restart = 1'b1;
+
           ball_next = 2'b11;
           score_clr = 1'b1;
           if (isMoving)
@@ -102,7 +105,7 @@ module fsm(
 			end
       ball_refill:
 			begin
-        if (timer_end)
+        if (timer_end && (isMoving))
           state_next = game;
 			end
       end_game:

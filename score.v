@@ -39,7 +39,7 @@ module score(
 	
 	always @ (posedge clk50M)
 		if(reset) begin
-			score_0 <= 0;
+			score_0<= 0;
 			score_1 <= 0;
 		end
 		else begin

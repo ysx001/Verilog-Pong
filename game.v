@@ -31,8 +31,10 @@ module pong_game(
     output HS,
     output VS, 
 	 // Debug
-	 output restart,
-	 output isMoving);
+	 output reg restart,
+	 output isMoving,
+	 output [1:0] collided
+	 );
     
     wire [9:0] paddle_one_x;
     wire [9:0] paddle_one_y;
@@ -50,7 +52,7 @@ module pong_game(
 	
 	wire isMoving_0, isMoving_1;
 	//wire restart;
-	wire [1:0] collided, missed;
+	wire [1:0] missed;
 	wire score_clr;
     
     shift_delay eof_delay(clk50M, endofframe, endofframe_2);
@@ -71,10 +73,104 @@ module pong_game(
 	
 	 assign isMoving = isMoving_1 | isMoving_0;
 
-    score score_disp(.clk50M(clk50M), .reset(reset), .score(collided), .score_clr(score_clr), .seven_value(seven_value), .disp_select(disp_select));
+    debounce_test score_disp(.clk(clk50M), .reset(reset), .btn(collided),  .seven_value(seven_value), .disp_select(disp_select));
     
-	 fsm game_fsm( .clk(clk50M), .reset(reset), .endofframe(endofframe), .collided(collided), .missed(missed), .isMoving(isMoving), .score_clr(score_clr), 
-    .restart (restart) );
+//	 fsm game_fsm( .clk(clk50M), .endofframe(endofframe), .collided(collided), .missed(missed), .isMoving(isMoving), .score_clr(score_clr), 
+//    .restart (restart) );
+
+// ============================================ FSM =============================================
+
+    // State declaration
+    localparam [1:0] start = 2'b00;
+    localparam [1:0] game = 2'b01;
+    localparam [1:0] ball_refill = 2'b10;
+    localparam [1:0] end_game = 2'b11;
+    
+    reg [1:0] state, state_next;
+    reg ball, ball_next;
+	 
+	 reg timer_begin;
+	 wire timer_end;
+  
+  reg [6:0] timer, timer_next;
+  
+  always @ (posedge clk50M, posedge reset)
+    if (reset)
+      timer <= 7'b1111111;
+    else
+      timer <= timer_next;
+  
+  always @ (*)
+  begin
+    if (timer_begin)
+      timer_next = 7'b1111111;
+    else if ((endofframe) && (timer != 0))
+      timer_next = timer - 1;
+    else
+      timer_next = timer;
+  end
+  
+  assign timer_end = (timer == 0);
+    
+  always @ (posedge clk50M, posedge reset)
+    begin
+      if (reset)
+        begin
+          state <= start;
+          ball <= 0;
+		 end
+      else
+        begin
+          state <= state_next;
+          ball <= ball_next;
+        end
+    end
+    
+  always @ (*)
+  begin
+    //restart = 1'b0;
+	 //score_clr = 1'b0;
+	 state_next = state;
+	 ball_next = ball;
+    case (state)
+      start:
+		 begin
+          ball_next = 2'b11;
+          //score_clr = 1'b1;
+          if (isMoving)
+            begin
+              state_next = game;
+              ball_next = ball - 1;
+            end
+			end
+      game:
+        begin
+          //restart = 1'b0;
+          if (missed != 2'b00)
+            begin 
+              if (ball == 0)
+                state_next = end_game;
+              else
+                state_next = ball_refill;
+              timer_begin = 1'b1;
+              ball_next = ball - 1;
+            end
+			end
+      ball_refill:
+			begin
+        if (timer_end && (isMoving))
+          state_next = game;
+			end
+      end_game:
+			begin
+        if (timer_end)
+          state_next = start;
+			 end
+    endcase
+  end
+  
+
+// ==============================================================================================
     
     sound note(.clk25(clk), .point(collided), .lose(missed), .speaker(speaker)); 
     
@@ -238,26 +334,26 @@ module ball_movement(
 		diff_y_next = diff_y;
 	
 		if (ball_top <= 10) // top
-			diff_y_next = 1;
+			diff_y_next = 2;
 		else if (ball_bottom >= 470) // bottom
-			diff_y_next = -1; 
+			diff_y_next = -2; 
         else if (ball_left <= `PADDLE_ONE_X && (ball_bottom >= paddle_one_top //Left Paddle
             && ball_top <= paddle_one_bottom)) begin
-			diff_x_next = 1;
-            collided = 2'b10;
+			diff_x_next = 2;
+            collided[0] = 1'b1;
         end 
 		else if (ball_right >= `PADDLE_TWO_X && (ball_bottom >= paddle_two_top // Right Paddle
                 && ball_top <= paddle_two_bottom)) begin
-			diff_x_next = -1;
-			collided = 2'b01;
+			diff_x_next = -2;
+			collided[1] = 1'b1;
 			end
         else if (ball_left <= 2) begin
-            diff_x_next = 0;
-            missed = 2'b10;
+            diff_x_next = 2;
+            missed[0] = 1'b1;
         end
 		else if (ball_right > 630) begin
-			missed = 2'b01;
-			diff_x_next = 0;
+			missed[1] = 1'b1;
+			diff_x_next = -2;
         end
 	end
 endmodule

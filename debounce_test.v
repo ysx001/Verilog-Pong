@@ -22,8 +22,7 @@ module debounce_test(
     input wire clk, reset,
     input wire [1:0] btn,
     output [7:0] seven_value,
-    output [3:0] disp_select,
-	 output speaker
+    output [3:0] disp_select
     );
 	reg [7:0] btn_1, btn_0;
 	reg [7:0] btn_0_next;
@@ -61,7 +60,7 @@ module debounce_test(
   
 	assign btn_1_next = (db_clk_1) ? btn_1 + 1 : btn_1;
 	//assign btn_0_next = (db_clk_0) ? btn_0 + 1 : btn_0;
-	sound note(.clk25(clk), .point(q_0), .lose(db_clk_1), .speaker(speaker)); 
+	//sound note(.clk25(clk), .point(q_0), .lose(db_clk_1), .speaker(speaker)); 
 endmodule
 
 module sseg_hex (input clk, reset,
