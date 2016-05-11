@@ -30,7 +30,7 @@ module debounce_test(
 	wire db_clk_1, db_clk_0, q_0;
 	
 	debounce dp_btn_0 (.raw(btn[0]), .clk(clk), .reset(reset), .db_clk(db_clk_0), .q(q_0));
-	debounce dp_btn_1 (.raw(btn[1]), .clk(clk), .reset(reset), .db_clk(db_clk_1), .q());
+	debounce dp_btn_1 (.raw(btn[1]), .clk(clk), .reset(reset), .db_clk(db_clk_1), .q(q_1));
 	
 	 
 	sseg_hex btn_disp(.clk(clk), .reset(reset), .first_1(btn_0[7:4]), .first_0(btn_0[3:0]), .second_1(btn_1[7:4]),
@@ -57,8 +57,24 @@ module debounce_test(
 		else
 			btn_0_next[3:0] <= btn_0[3:0] + 1;
 	end
+	
+	always @(posedge clk)
+	if(reset) begin
+		btn_1_next <= 0;
+	end
+	else if(db_clk_1) begin
+		if(btn_1_next[3:0] == 4'b1001)begin
+			btn_1_next[3:0] <= 4'b0;
+			if(btn_1_next[7:4] == 4'b1001)
+				btn_1_next[7:4] <= 0;
+			else
+				btn_1_next[7:4] <= btn_1[7:4] + 1;
+		end
+		else
+			btn_1_next[3:0] <= btn_1[3:0] + 1;
+	end
   
-	assign btn_1_next = (db_clk_1) ? btn_1 + 1 : btn_1;
+	//assign btn_1_next = (db_clk_1) ? btn_1 + 1 : btn_1;
 	//assign btn_0_next = (db_clk_0) ? btn_0 + 1 : btn_0;
 	//sound note(.clk25(clk), .point(q_0), .lose(db_clk_1), .speaker(speaker)); 
 endmodule
