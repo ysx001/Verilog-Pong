@@ -57,15 +57,15 @@ module joystick_paddle_movement(
         else if (y + 50 > 470 && joystick_y < up_slow_boundary)
             next_y = y;
         else if (joystick_y > down_fast_boundary)
-            next_y = y - 3;
+            next_y = y - 5;
         else if (joystick_y > down_slow_boundary)
-            next_y = y - 1;
+            next_y = y - 2;
         else if (joystick_y > up_slow_boundary)
             next_y = y;
         else if (joystick_y > up_fast_boundary)
-            next_y = y + 1;
+            next_y = y + 2;
         else
-            next_y = y + 3;
+            next_y = y + 5;
     end
     
     // Joystick is stationary if it is between up_slow_boundary and 
