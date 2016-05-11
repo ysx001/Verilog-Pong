@@ -25,8 +25,7 @@ module debounce_test(
     output [3:0] disp_select
     );
 	reg [7:0] btn_1, btn_0;
-	reg [7:0] btn_0_next;
-	wire [7:0] btn_1_next;
+	reg [7:0] btn_0_next, btn_1_next;
 	wire db_clk_1, db_clk_0, q_0;
 	
 	debounce dp_btn_0 (.raw(btn[0]), .clk(clk), .reset(reset), .db_clk(db_clk_0), .q(q_0));

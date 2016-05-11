@@ -82,7 +82,7 @@ module pong_game(
 	assign point = collided[0] | collided[1];
 	assign lose = missed[0] | missed[1];
 
-	 sound note(.clk25(clk), .point(collided), .lose(missed), .speaker(speaker)); 
+	 sound note(.clk25(clk50M), .point(collided), .lose(missed), .speaker(speaker)); 
 
 // ============================================ FSM =============================================
 
@@ -175,13 +175,6 @@ module pong_game(
     endcase
   end
   
-
-// ==============================================================================================
-    
-    sound note(.clk25(clk50M), .point(collided), .lose(missed), .speaker(speaker)); 
-    
-
-
 endmodule
 
 
@@ -323,13 +316,8 @@ module ball_movement(
 	// ball movement
 
 	 //Set the ball to the center if restart else change position when a frame has ended
-	assign ball_x_next = (restart) ? 320 : (endofframe) ? ball_x + diff_x : ball_x;
-	assign ball_y_next = (restart) ? 240 : (endofframe) ? ball_y + diff_y : ball_y;
-	
-//	always @ (*) begin //when a frame has ended
-//			ball_x_next = ball_x + 2*diff_x;
-//			ball_y_next = ball_y + 2*diff_y;
-//	end
+	assign ball_x_next = (restart) ? 320 : (endofframe) ? ball_x + 2*diff_x : ball_x;
+	assign ball_y_next = (restart) ? 240 : (endofframe) ? ball_y + 2*diff_y : ball_y;
 	
 	always @ (*) begin
 	
