@@ -172,7 +172,7 @@ module pong_game(
 
 // ==============================================================================================
     
-    sound note(.clk25(clk), .point(collided), .lose(missed), .speaker(speaker)); 
+    sound note(.clk25(clk50M), .point(collided), .lose(missed), .speaker(speaker)); 
     
 
 
