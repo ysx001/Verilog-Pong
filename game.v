@@ -78,6 +78,12 @@ module pong_game(
 //	 fsm game_fsm( .clk(clk50M), .endofframe(endofframe), .collided(collided), .missed(missed), .isMoving(isMoving), .score_clr(score_clr), 
 //    .restart (restart) );
 
+	wire point, lose;
+	assign point = collided[0] | collided[1];
+	assign lose = missed[0] | missed[1];
+
+	 sound note(.clk25(clk), .point(collided), .lose(missed), .speaker(speaker)); 
+
 // ============================================ FSM =============================================
 
     // State declaration
@@ -172,7 +178,7 @@ module pong_game(
 
 // ==============================================================================================
     
-    sound note(.clk25(clk), .point(collided), .lose(missed), .speaker(speaker)); 
+
     
 
 
