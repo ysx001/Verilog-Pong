@@ -33,5 +33,4 @@ always @(posedge clk25)
 assign speaker = (point != 2'b00) ? counter[16]:
 			        (lose != 2'b00) ? counter[15]:
 						0;
-
 endmodule
